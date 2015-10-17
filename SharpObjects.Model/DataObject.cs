@@ -8,20 +8,20 @@ namespace SharpObjects.Model
 	{
 	}
 
-	[StructLayout(LayoutKind.Explicit, Pack = 1)]
+	[StructLayout(LayoutKind.Explicit, Pack = 1, Size = 9)]
 	public struct DataObjectValue
 	{
 		[FieldOffset(0)]
-		private DataObjectValueType _type;
-
-		[FieldOffset(sizeof(DataObjectValueType))]
 		private Boolean _booleanValue;
 
-		[FieldOffset(sizeof(DataObjectValueType))]
+		[FieldOffset(0)]
 		private Int32 _intValue;
 
-		[FieldOffset(sizeof(DataObjectValueType) + sizeof(Int32))]
+		[FieldOffset(sizeof(Int32))]
 		private Object _referenceTypeValue;
+
+		[FieldOffset(sizeof(Int32) + 4)]
+		private DataObjectValueType _type;
 	}
 
 	internal enum DataObjectValueType : byte
