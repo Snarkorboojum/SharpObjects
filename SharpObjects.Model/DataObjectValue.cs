@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace SharpObjects.Model
 {
 	[StructLayout(LayoutKind.Explicit, Pack = 1)]
+	[DebuggerDisplay("{_type} {BoxedValue}")]
 	public struct DataObjectValue : IEquatable<DataObjectValue>
 	{
 		#region Fields
@@ -56,6 +59,38 @@ namespace SharpObjects.Model
 		{
 			_referenceTypeValue = value;
 			_type = DataObjectValueType.String;
+			if (value == null)
+				return;
+
+			if (Boolean.TrueString.Equals(value, StringComparison.OrdinalIgnoreCase))
+			{
+				_booleanValue = true;
+				_type |= DataObjectValueType.Boolean;
+				return;
+			}
+
+			if (Boolean.FalseString.Equals(value, StringComparison.OrdinalIgnoreCase))
+			{
+				_booleanValue = false;
+				_type |= DataObjectValueType.Boolean;
+				return;
+			}
+
+			Int32 parsedIntegerValue;
+			if (Int32.TryParse(value, out parsedIntegerValue))
+			{
+				_intValue = parsedIntegerValue;
+				_type |= DataObjectValueType.Integer;
+			}
+			else
+			{
+				Single parsedSingleValue;
+				if (!Single.TryParse(value, out parsedSingleValue))
+					return;
+
+				_singleValue = parsedSingleValue;
+				_type |= DataObjectValueType.Float;
+			}
 		}
 
 		public DataObjectValue(Object value)
@@ -87,6 +122,39 @@ namespace SharpObjects.Model
 
 					default:
 						throw new InvalidOperationException("Can not determine the existence of value. Unknown value type");
+				}
+			}
+		}
+
+		private Object BoxedValue
+		{
+			get
+			{
+				switch (_type)
+				{
+					case DataObjectValueType.None:
+						return null;
+
+					case DataObjectValueType.Boolean:
+						return _booleanValue;
+
+					case DataObjectValueType.Integer:
+						return _intValue;
+
+					case DataObjectValueType.Float:
+						return _singleValue;
+
+					case DataObjectValueType.String:
+					case DataObjectValueType.BooleanString:
+					case DataObjectValueType.IntegerString:
+					case DataObjectValueType.FloatString:
+						return _referenceTypeValue;
+
+					case DataObjectValueType.Object:
+						return _referenceTypeValue;
+
+					default:
+						throw new InvalidOperationException("Cannot get boxed value. Unknown value type");
 				}
 			}
 		}
@@ -153,57 +221,59 @@ namespace SharpObjects.Model
 
 		#region Equality Methods
 
+		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
 		public override Int32 GetHashCode()
 		{
 			unchecked
 			{
 				var hashCode = (Int32)_type;
-				switch (_type)
+				if (_type == DataObjectValueType.None)
+					return hashCode;
+
+				if (_type.HasFlag(DataObjectValueType.Boolean))
+					return _booleanValue.GetHashCode();
+
+				if (_type.HasFlag(DataObjectValueType.Integer))
+					return _intValue.GetHashCode();
+
+				if (_type.HasFlag(DataObjectValueType.Float))
 				{
-					case DataObjectValueType.None:
-						return hashCode;
-
-					case DataObjectValueType.Boolean:
-						return (hashCode * 397) ^ _booleanValue.GetHashCode();
-
-					case DataObjectValueType.Integer:
-						return (hashCode * 397) ^ _intValue.GetHashCode();
-
-					case DataObjectValueType.Float:
-						return (hashCode * 397) ^ _singleValue.GetHashCode();
-
-					case DataObjectValueType.String:
-					case DataObjectValueType.Object:
-						return (hashCode * 397) ^ (_referenceTypeValue?.GetHashCode() ?? 0);
-					default:
-						throw new InvalidOperationException("Cannot perform 'Get Hash Code' operation. Unknown value type");
+					var singleRounded = (Int32)_singleValue;
+					return _singleValue - singleRounded == 0
+						? singleRounded.GetHashCode()
+						: _singleValue.GetHashCode();
 				}
+
+				if (_type == DataObjectValueType.String || _type == DataObjectValueType.Object)
+					return _referenceTypeValue?.GetHashCode() ?? 0;
+
+				throw new InvalidOperationException("Cannot perform 'Get Hash Code' operation. Unknown value type");
 			}
 		}
 
 		public override Boolean Equals(Object other)
 		{
+			if (other is DataObjectValue)
+				return Equals((DataObjectValue)other, typeConsistencyCheck: false);
+
 			if (other is Boolean)
-				return Equals(new DataObjectValue((Boolean)other));
+				return Equals(new DataObjectValue((Boolean)other), typeConsistencyCheck: false);
 
 			if (other is Int32)
-				return Equals(new DataObjectValue((Int32)other));
+				return Equals(new DataObjectValue((Int32)other), typeConsistencyCheck: false);
 
 			if (other is Single)
-				return Equals(new DataObjectValue((Single)other));
+				return Equals(new DataObjectValue((Single)other), typeConsistencyCheck: false);
 
 			var stringObject = other as String;
-			return Equals(stringObject != null
-				? new DataObjectValue(stringObject)
-				: new DataObjectValue(other));
+			return Equals(stringObject != null ? new DataObjectValue(stringObject) : new DataObjectValue(other), typeConsistencyCheck: false);
 		}
 
 		public Boolean Equals(DataObjectValue other)
 		{
-			return Equals(other, typeConsistencyCheck: true);
+			return Equals(other, typeConsistencyCheck: false);
 		}
 
-		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
 		public Boolean Equals(DataObjectValue other, Boolean typeConsistencyCheck)
 		{
 			if (other._type == DataObjectValueType.None)
@@ -215,122 +285,144 @@ namespace SharpObjects.Model
 					return other._type == DataObjectValueType.None;
 
 				case DataObjectValueType.Boolean:
-					{
-						if (other._type == DataObjectValueType.Boolean)
-							return _booleanValue == other._booleanValue;
-
-						if (typeConsistencyCheck)
-							throw new InvalidOperationException("Cannot compare values with different types");
-
-						if (other._type == DataObjectValueType.String)
-							return Equals((String)other._referenceTypeValue, _booleanValue);
-
-						return _booleanValue && other.HasValue;
-					}
+				case DataObjectValueType.BooleanString:
+					return BooleanEqualsTo(other, typeConsistencyCheck);
 
 				case DataObjectValueType.Integer:
-					{
-						if (other._type == DataObjectValueType.Integer)
-							return _intValue == other._intValue;
-
-						if (typeConsistencyCheck)
-							throw new InvalidOperationException("Cannot compare values with different types");
-
-						switch (other._type)
-						{
-							case DataObjectValueType.Boolean:
-								return other._booleanValue;
-
-							case DataObjectValueType.Float:
-								// ReSharper disable once RedundantCast
-								return ((Single)_intValue) == other._singleValue;
-
-							case DataObjectValueType.String:
-								return Equals((String)other._referenceTypeValue, _intValue);
-
-							default:
-								return false;
-						}
-					}
+				case DataObjectValueType.IntegerString:
+					return IntegerEqualsTo(other, typeConsistencyCheck);
 
 				case DataObjectValueType.Float:
-					{
-						if (other._type == DataObjectValueType.Float)
-							return _singleValue == other._singleValue;
-
-						if (typeConsistencyCheck)
-							throw new InvalidOperationException("Cannot compare values with different types");
-
-						switch (other._type)
-						{
-							case DataObjectValueType.Boolean:
-								return other._booleanValue;
-
-							case DataObjectValueType.Integer:
-								// ReSharper disable once RedundantCast
-								return _singleValue == (Single)other._intValue;
-
-							case DataObjectValueType.String:
-								return Equals((String)other._referenceTypeValue, _singleValue);
-
-							default:
-								return false;
-						}
-					}
+				case DataObjectValueType.FloatString:
+					return FloatEqualsTo(other, typeConsistencyCheck);
 
 				case DataObjectValueType.String:
-					{
-						if (other._type == DataObjectValueType.String)
-							return String.Equals((String)_referenceTypeValue, (String)other._referenceTypeValue, StringComparison.Ordinal);
-
-						if (typeConsistencyCheck)
-							throw new InvalidOperationException("Cannot compare values with different types");
-
-						switch (other._type)
-						{
-							case DataObjectValueType.Boolean:
-								return Equals((String)_referenceTypeValue, other._booleanValue);
-
-							case DataObjectValueType.Integer:
-								return Equals((String)_referenceTypeValue, other._intValue);
-
-							case DataObjectValueType.Float:
-								return Equals((String)_referenceTypeValue, other._singleValue);
-
-							case DataObjectValueType.Object:
-								return other._referenceTypeValue == _referenceTypeValue; // reference equals
-
-							default:
-								return false;
-						}
-					}
+					return StringEqualsTo(other, typeConsistencyCheck);
 
 				case DataObjectValueType.Object:
-					{
-						if (other._type == DataObjectValueType.Object)
-							return _referenceTypeValue == other._referenceTypeValue;
-
-						if (typeConsistencyCheck)
-							throw new InvalidOperationException("Cannot compare values with different types");
-
-						if (other._type == DataObjectValueType.Boolean)
-							return _referenceTypeValue != null == other._booleanValue;
-
-
-						if (other._type == DataObjectValueType.String)
-							return _referenceTypeValue == other._referenceTypeValue; // reference equals
-
-						return false;
-					}
+					return ObjectEqualsTo(other, typeConsistencyCheck);
 
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
+		#region Strongly-typed equality methods
+
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		private Boolean BooleanEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			if (other._type == DataObjectValueType.Boolean)
+				return _booleanValue == other._booleanValue;
+
+			if (typeConsistencyCheck)
+				throw new InvalidOperationException("Cannot compare values with different types");
+
+			if (other._type.HasFlag(DataObjectValueType.Boolean))
+				return _booleanValue == other._booleanValue;
+
+			if (other._type.HasFlag(DataObjectValueType.Integer))
+				return _booleanValue == other._intValue > 0;
+
+			if (other._type.HasFlag(DataObjectValueType.Float))
+				return _booleanValue == other._singleValue > 0;
+
+			if (other._type == DataObjectValueType.String)
+				return false;
+
+			return _booleanValue && other.HasValue;
+		}
+
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		private Boolean IntegerEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			if (other._type == DataObjectValueType.Integer)
+				return _intValue == other._intValue;
+
+			if (typeConsistencyCheck)
+				throw new InvalidOperationException("Cannot compare values with different types");
+
+
+			if (other._type.HasFlag(DataObjectValueType.Integer))
+				return _intValue == other._intValue;
+
+			if (other._type.HasFlag(DataObjectValueType.Boolean))
+				return _intValue > 0 == other._booleanValue;
+
+			if (other._type.HasFlag(DataObjectValueType.Float))
+			{
+				// ReSharper disable once RedundantCast
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				return ((Single)_intValue) == other._singleValue;
+			}
+
+			return false;
+		}
+
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
+		private Boolean FloatEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			if (other._type == DataObjectValueType.Float)
+				return _singleValue == other._singleValue;
+
+			if (typeConsistencyCheck)
+				throw new InvalidOperationException("Cannot compare values with different types");
+
+			if (other._type.HasFlag(DataObjectValueType.Float))
+				return _singleValue == other._singleValue;
+
+			if (other._type == DataObjectValueType.Boolean)
+				return _singleValue > 0 == other._booleanValue;
+
+			if (other._type.HasFlag(DataObjectValueType.Integer))
+				// ReSharper disable once RedundantCast
+				return _singleValue == (Single)other._intValue;
+
+			return false;
+		}
+
+		private Boolean StringEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			{
+				if (other._type == DataObjectValueType.String)
+					return String.Equals((String)_referenceTypeValue, (String)other._referenceTypeValue, StringComparison.Ordinal);
+
+				if (typeConsistencyCheck)
+					throw new InvalidOperationException("Cannot compare values with different types");
+
+				if (other._type == DataObjectValueType.Object)
+					return other._referenceTypeValue == _referenceTypeValue; // reference equals
+
+				return false;
+			}
+		}
+
+		private Boolean ObjectEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			{
+				if (other._type == DataObjectValueType.Object)
+					return _referenceTypeValue == other._referenceTypeValue;
+
+				if (typeConsistencyCheck)
+					throw new InvalidOperationException("Cannot compare values with different types");
+
+				if (other._type == DataObjectValueType.Boolean)
+					return (_referenceTypeValue != null) == other._booleanValue;
+
+				if (other._type == DataObjectValueType.String)
+					return _referenceTypeValue == other._referenceTypeValue; // reference equals
+
+				return false;
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Equality Operators
+
 		public static Boolean operator ==(DataObjectValue left, DataObjectValue right)
 		{
 			return left.Equals(right);
@@ -339,43 +431,6 @@ namespace SharpObjects.Model
 		public static Boolean operator !=(DataObjectValue left, DataObjectValue right)
 		{
 			return !left.Equals(right);
-		}
-
-		#endregion
-
-		#region String Comparison
-
-		private static Boolean Equals(String stringValue, Boolean booleanValue)
-		{
-			if (stringValue == null)
-				return false;
-
-			if (Boolean.TrueString.Equals(stringValue, StringComparison.OrdinalIgnoreCase))
-				return booleanValue;
-
-			if (Boolean.FalseString.Equals(stringValue, StringComparison.OrdinalIgnoreCase))
-				return !booleanValue;
-
-			return false;
-		}
-
-		private static Boolean Equals(String stringValue, Int32 integerValue)
-		{
-			if (stringValue == null)
-				return false;
-
-			Int32 parsedValue;
-			return Int32.TryParse(stringValue, out parsedValue) && integerValue == parsedValue;
-		}
-
-		private static Boolean Equals(String stringValue, Single singleValue)
-		{
-			if (stringValue == null)
-				return false;
-
-			Single parsedValue;
-			// ReSharper disable once CompareOfFloatsByEqualityOperator
-			return Single.TryParse(stringValue, out parsedValue) && singleValue == parsedValue;
 		}
 
 		#endregion
@@ -397,7 +452,10 @@ namespace SharpObjects.Model
 					return _singleValue.ToString(CultureInfo.InvariantCulture);
 
 				case DataObjectValueType.String:
-					return (String)_referenceTypeValue ?? String.Empty;
+				case DataObjectValueType.BooleanString:
+				case DataObjectValueType.IntegerString:
+				case DataObjectValueType.FloatString:
+					return (String)_referenceTypeValue;
 
 				case DataObjectValueType.Object:
 					return _referenceTypeValue?.ToString() ?? String.Empty;
@@ -410,12 +468,44 @@ namespace SharpObjects.Model
 		[Flags]
 		internal enum DataObjectValueType : byte
 		{
+			[DebuggerDisplay("None")]
 			None = 0,
+
+			[DebuggerDisplay("[Boolean]")]
 			Boolean = 1 << 0,
+
+			[DebuggerDisplay("[Int32]")]
 			Integer = 1 << 1,
+
+			[DebuggerDisplay("[Single]")]
 			Float = 1 << 2,
+
+			[DebuggerDisplay("[String]")]
 			String = 1 << 3,
+
+			[DebuggerDisplay("[Boolean from String]")]
+			BooleanString = String | Boolean,
+
+			[DebuggerDisplay("[Int32 from String]")]
+			IntegerString = String | Integer,
+
+			[DebuggerDisplay("[Single from String]")]
+			FloatString = String | Float,
+
+			[DebuggerDisplay("[Object]")]
 			Object = 1 << 4
+		}
+	}
+
+	internal static class DataObjectValueTypeExtensions
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Boolean HasFlag(this DataObjectValue.DataObjectValueType source, DataObjectValue.DataObjectValueType flag)
+		{
+			var sourceValue = (Int32)source;
+			var flagValue = (Int32)flag;
+
+			return (sourceValue & flagValue) == flagValue;
 		}
 	}
 }

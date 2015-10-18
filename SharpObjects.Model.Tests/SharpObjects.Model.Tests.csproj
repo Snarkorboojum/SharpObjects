@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DataObjectValueTests.cs" />
+    <Compile Include="DataObjectValueEqualityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
