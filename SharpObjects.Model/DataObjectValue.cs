@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SharpObjects.Model
 {
-	[StructLayout(LayoutKind.Explicit, Pack = 1, Size = 9)]
+	[StructLayout(LayoutKind.Explicit, Pack = 1)]
 	public struct DataObjectValue
 	{
 		#region Fields
