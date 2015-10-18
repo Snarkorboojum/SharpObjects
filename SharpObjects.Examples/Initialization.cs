@@ -16,7 +16,7 @@ namespace SharpObjects.Examples
 
 		public void Real()
 		{
-			var x = new DataObjectX()
+			var x = new DataObjectX
 			{
 				Id = "256",
 				Width = 15,
