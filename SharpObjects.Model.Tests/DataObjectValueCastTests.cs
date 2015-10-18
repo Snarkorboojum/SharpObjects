@@ -79,7 +79,7 @@ namespace SharpObjects.Model.Tests
 			AssertCast(new DataObjectValue("-4.721"), false, -4, -4.721f, "-4.721");
 			AssertCast(new DataObjectValue("True"), true, 1, 1.0f, "True");
 			AssertCast(new DataObjectValue("FALSE"), false, 0, 0.0f, "FALSE");
-			AssertCast(new DataObjectValue("FALSE"), false, 0, 0.0f, "FALSE");
+			AssertCast(new DataObjectValue("faLSe"), false, 0, 0.0f, "faLSe");
 		}
 
 		#region Assertion Methods
