@@ -10,7 +10,7 @@ namespace SharpObjects.Model.Tests
 		#region Same types
 
 		[TestMethod]
-		public void EmptyValues()
+		public void EmptyValuesTest()
 		{
 			AssertAreEqual(default(DataObjectValue), default(DataObjectValue));
 			AssertAreEqual(default(DataObjectValue), new DataObjectValue());
@@ -18,7 +18,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void BooleanValues()
+		public void BooleanValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(true), new DataObjectValue(true));
 			AssertAreEqual(new DataObjectValue(false), new DataObjectValue(false));
@@ -27,14 +27,14 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void IntValues()
+		public void IntValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0), new DataObjectValue(0));
 			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(5));
 		}
 
 		[TestMethod]
-		public void SingleValues()
+		public void SingleValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue(0f));
 			AssertAreEqual(new DataObjectValue(5f), new DataObjectValue(5f));
@@ -43,7 +43,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void StringValues()
+		public void StringValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(""), new DataObjectValue(""));
 
@@ -58,7 +58,7 @@ namespace SharpObjects.Model.Tests
 		#region Cross typess
 
 		[TestMethod]
-		public void BooleanAndStringValues()
+		public void BooleanAndStringValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("True"));
 			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("TRUE"));
@@ -79,7 +79,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void IntAndBooleanValues()
+		public void IntAndBooleanValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(1), new DataObjectValue(true));
 			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(true), skipHashCheck: true);
@@ -89,7 +89,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void IntAndSingleValues()
+		public void IntAndSingleValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0), new DataObjectValue(0f));
 			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(5f));
@@ -99,7 +99,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void IntAndStringValues()
+		public void IntAndStringValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0), new DataObjectValue("0"));
 			AssertAreEqual(new DataObjectValue(5), new DataObjectValue("5"));
@@ -113,7 +113,7 @@ namespace SharpObjects.Model.Tests
 			AssertAreNotEqual(new DataObjectValue(6), new DataObjectValue("6asfasdf"));
 		}
 
-		public void SingleAndBooleanValues()
+		public void SingleAndBooleanValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue(false));
 			AssertAreEqual(new DataObjectValue(1.0f), new DataObjectValue(true));
@@ -123,7 +123,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void SingleAndStringValues()
+		public void SingleAndStringValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue("0"));
 			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue("0.0"));
