@@ -1,7 +1,7 @@
 # Sharp Objects
 ## Initializers
 
-Sharp object allows to initialize storngly typed data objects in code without type declaration. Just declare and set properties to initialize any object.
+Sharp Object allows to initialize storngly typed data objects in code without type declaration. Just declare and set properties to initialize any object.
 
 Example:
 ```
@@ -10,7 +10,7 @@ x.Width = 14;
 Console.WrileLine("Width={0}, Height={1}", x.Width, x.Height);
 
 ```
-To make that code working SharoObjects generates dedicated type declaration and expands short-form initializer to typical C# initializer.
+To make that code working Sharp Object generates dedicated type declaration and expands short-form initializer to typical C# initializer.
 
 Expanded:
 ```
