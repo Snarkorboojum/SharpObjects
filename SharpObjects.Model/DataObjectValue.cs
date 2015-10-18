@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace SharpObjects.Model
@@ -152,6 +153,51 @@ namespace SharpObjects.Model
 
 		#region Equality Methods
 
+		public override Int32 GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = (Int32)_type;
+				switch (_type)
+				{
+					case DataObjectValueType.None:
+						return hashCode;
+
+					case DataObjectValueType.Boolean:
+						return (hashCode * 397) ^ _booleanValue.GetHashCode();
+
+					case DataObjectValueType.Integer:
+						return (hashCode * 397) ^ _intValue.GetHashCode();
+
+					case DataObjectValueType.Float:
+						return (hashCode * 397) ^ _singleValue.GetHashCode();
+
+					case DataObjectValueType.String:
+					case DataObjectValueType.Object:
+						return (hashCode * 397) ^ (_referenceTypeValue?.GetHashCode() ?? 0);
+					default:
+						throw new InvalidOperationException("Cannot perform 'Get Hash Code' operation. Unknown value type");
+				}
+			}
+		}
+
+		public override Boolean Equals(Object other)
+		{
+			if (other is Boolean)
+				return Equals(new DataObjectValue((Boolean)other));
+
+			if (other is Int32)
+				return Equals(new DataObjectValue((Int32)other));
+
+			if (other is Single)
+				return Equals(new DataObjectValue((Single)other));
+
+			var stringObject = other as String;
+			return Equals(stringObject != null
+				? new DataObjectValue(stringObject)
+				: new DataObjectValue(other));
+		}
+
 		public Boolean Equals(DataObjectValue other)
 		{
 			return Equals(other, typeConsistencyCheck: true);
@@ -284,6 +330,19 @@ namespace SharpObjects.Model
 
 		#endregion
 
+		#region Equality Operators
+		public static Boolean operator ==(DataObjectValue left, DataObjectValue right)
+		{
+			return left.Equals(right);
+		}
+
+		public static Boolean operator !=(DataObjectValue left, DataObjectValue right)
+		{
+			return !left.Equals(right);
+		}
+
+		#endregion
+
 		#region String Comparison
 
 		private static Boolean Equals(String stringValue, Boolean booleanValue)
@@ -320,6 +379,33 @@ namespace SharpObjects.Model
 		}
 
 		#endregion
+
+		public override String ToString()
+		{
+			switch (_type)
+			{
+				case DataObjectValueType.None:
+					return String.Empty;
+
+				case DataObjectValueType.Boolean:
+					return _booleanValue ? Boolean.TrueString : Boolean.FalseString;
+
+				case DataObjectValueType.Integer:
+					return _intValue.ToString();
+
+				case DataObjectValueType.Float:
+					return _singleValue.ToString(CultureInfo.InvariantCulture);
+
+				case DataObjectValueType.String:
+					return (String)_referenceTypeValue ?? String.Empty;
+
+				case DataObjectValueType.Object:
+					return _referenceTypeValue?.ToString() ?? String.Empty;
+
+				default:
+					throw new InvalidOperationException("Cannot perform 'To String' operation. Unknown value type");
+			}
+		}
 
 		[Flags]
 		internal enum DataObjectValueType : byte

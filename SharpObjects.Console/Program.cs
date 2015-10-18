@@ -11,7 +11,7 @@ namespace SharpObjects.Console
 		{
 			var dataObjectValue = new DataObjectValue();
 			var sizeOfDataObjectValue = Marshal.SizeOf(dataObjectValue);
-			WriteLine(sizeOfDataObjectValue);
+			WriteLine(sizeOfDataObjectValue);	
 
 			ReadLine();
 		}
