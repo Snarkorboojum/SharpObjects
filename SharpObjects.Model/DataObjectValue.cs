@@ -26,13 +26,89 @@ namespace SharpObjects.Model
 
 		#endregion
 
-		[Flags]
+		#region Constructors
+
+		public DataObjectValue(Boolean value)
+			: this()
+		{
+			_booleanValue = value;
+			_type = DataObjectValueType.Boolean;
+		}
+
+		public DataObjectValue(Int32 value)
+			: this()
+		{
+			_intValue = value;
+			_type = DataObjectValueType.Integer;
+		}
+
+		public DataObjectValue(Single value)
+			: this()
+		{
+			_singleValue = value;
+			_type = DataObjectValueType.Float;
+		}
+
+		public DataObjectValue(String value)
+			: this()
+		{
+			_referenceTypeValue = value;
+			_type = DataObjectValueType.String;
+		}
+
+		public DataObjectValue(Object value)
+			: this()
+		{
+			_referenceTypeValue = value;
+			_type = DataObjectValueType.Object;
+		}
+
+		#endregion
+
+		#region Conversion
+
+		public static implicit operator Boolean(DataObjectValue dataObjectValue)
+		{
+			if (dataObjectValue._type == DataObjectValueType.Boolean)
+				return dataObjectValue._booleanValue;
+
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Boolean)}'");
+		}
+
+		public static implicit operator Int32(DataObjectValue dataObjectValue)
+		{
+			if (dataObjectValue._type == DataObjectValueType.Integer)
+				return dataObjectValue._intValue;
+
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Int32)}'");
+		}
+
+		public static implicit operator Single(DataObjectValue dataObjectValue)
+		{
+			if (dataObjectValue._type == DataObjectValueType.Float)
+				return dataObjectValue._singleValue;
+
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Single)}'");
+		}
+
+		public static implicit operator String(DataObjectValue dataObjectValue)
+		{
+			if (dataObjectValue._type == DataObjectValueType.String)
+				return (String)dataObjectValue._referenceTypeValue;
+
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(String)}'");
+		}
+
+		#endregion
+
+		[Flags] 
 		internal enum DataObjectValueType : byte
 		{
-			Integer = 1 << 0,
-			Float = 1 << 1,
-			String = 1 << 2,
-			Object = 1 << 3
+			Boolean = 1 << 0,
+			Integer = 1 << 1,
+			Float = 1 << 2,
+			String = 1 << 3,
+			Object = 1 << 4
 		}
 	}
 }
