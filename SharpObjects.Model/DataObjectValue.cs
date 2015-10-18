@@ -65,7 +65,31 @@ namespace SharpObjects.Model
 
 		#endregion
 
-		#region Conversion
+		#region Conversion From
+
+		public static implicit operator DataObjectValue(Boolean value)
+		{
+			return new DataObjectValue(value);
+		}
+
+		public static implicit operator DataObjectValue(Int32 value)
+		{
+			return new DataObjectValue(value);
+		}
+
+		public static implicit operator DataObjectValue(Single value)
+		{
+			return new DataObjectValue(value);
+		}
+
+		public static implicit operator DataObjectValue(String value)
+		{
+			return new DataObjectValue(value);
+		}
+
+		#endregion
+
+		#region Conversion To
 
 		public static implicit operator Boolean(DataObjectValue dataObjectValue)
 		{
