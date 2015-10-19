@@ -61,5 +61,51 @@ public sealed class DataObject_A1 : DataObject
 }
 ```
 
-## Type Declaration
-## Serialization
+## Accesss
+
+Sharp Objects allows to dynamically access to any property of DataObject.
+```
+public void Desired()
+{
+	DataObject data = GetData();
+
+	DataObjectValue id = data.Id;
+	if (id > 0)
+	{
+		Console.WriteLine($"Width: {data.Width}, Height: {data.Height}");
+	}
+	
+	DataObjectValue counter = data.Counter;
+	data.Timestamp = counter++;
+}
+```
+
+Compiler generates following code:
+```
+public void Real()
+{
+	DataObject data = GetData();
+
+	DataObjectValue id = data.GetPropertyValue("Id");
+	if (id > 0)
+	{
+		Console.WriteLine($"Width: {data.GetPropertyValue("Width")}, Height: {data.GetPropertyValue("Height")}");
+	}
+	
+	DataObjectValue counter = data.GetPropertyValue("Counter");
+	data.SetPropertyValue("Counter", counter++);
+}
+```
+
+GetData method:
+```
+public DataObject GetData()
+{
+	return new DataObjectX1
+	{
+		Id = "256",
+		Width = 15,
+		Height = 16.4f
+	};
+}
+```
