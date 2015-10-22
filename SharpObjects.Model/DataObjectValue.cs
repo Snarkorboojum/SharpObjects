@@ -26,7 +26,7 @@ namespace SharpObjects.Model
 		[FieldOffset(4)] // size 4 bytes
 		private readonly Single _singleValue;
 
-		[FieldOffset(8)] // should be aligned by 4 and be last one to work on Any CPU
+		[FieldOffset(8)] // should be aligned tou 4 and be the last one to work on Any CPU
 		private readonly Object _referenceTypeValue;
 
 		#endregion
