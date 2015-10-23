@@ -78,7 +78,6 @@ namespace SharpObjects.Model.Tests
 			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("-1.0"), skipHashCheck: true);
 		}
 
-		[TestMethod]
 		public void IntAndBooleanValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(1), new DataObjectValue(true));
@@ -171,6 +170,12 @@ namespace SharpObjects.Model.Tests
 			Assert.IsTrue(areEqualForward, $"Value '{value1.ToString()}'(1) not equals to value '{value2.ToString()}'(2)");
 			Assert.IsTrue(areEqualBackward, $"Value '{value2.ToString()}'(2) not equals to value '{value1.ToString()}'(1)");
 
+			// DataDataObjectValue.CompareTo(DataObjectValue) check
+			var areEqualComparedForward = value1.CompareTo(value2);
+			var areEqualComparedBackward = value2.CompareTo(value1);
+
+			Assert.IsTrue(areEqualComparedForward == 0, $"Value '{value1.ToString()}'(1) compared with value '{value2.ToString()}'(2) is '{areEqualComparedForward}'");
+			Assert.IsTrue(areEqualComparedBackward == 0, $"Value '{value2.ToString()}'(2) compared with value '{value1.ToString()}'(1) is '{areEqualComparedBackward}'");
 
 			// Object.Equals(Object) override check
 			var areEqualToObjectForward = value1.Equals((Object)value2);
@@ -204,6 +209,12 @@ namespace SharpObjects.Model.Tests
 			Assert.IsFalse(areEqualForward, $"Value '{value1.ToString()}'(1) equals to value '{value2.ToString()}'(2)");
 			Assert.IsFalse(areEqualBackward, $"Value '{value2.ToString()}'(2) equals to value '{value1.ToString()}'(1)");
 
+			// DataDataObjectValue.CompareTo(DataObjectValue) check
+			var areEqualComparedForward = value1.CompareTo(value2);
+			var areEqualComparedBackward = value2.CompareTo(value1);
+
+			Assert.IsTrue(areEqualComparedForward != 0, $"Value '{value1.ToString()}'(1) compared with value '{value2.ToString()}'(2) is '{areEqualComparedForward}'");
+			Assert.IsTrue(areEqualComparedBackward != 0, $"Value '{value2.ToString()}'(2) compared with value '{value1.ToString()}'(1) is '{areEqualComparedBackward}'");
 
 			// Object.Equals(Object) override check
 			var areEqualToObjectForward = value1.Equals((Object)value2);

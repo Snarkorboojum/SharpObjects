@@ -42,7 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataObject.cs" />
+    <Compile Include="DataObjectValue.Equatable.cs">
+      <DependentUpon>DataObjectValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataObjectValue.Conversion.cs">
+      <DependentUpon>DataObjectValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataObjectValue.Comparable.cs">
+      <DependentUpon>DataObjectValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataObjectValue.cs" />
+    <Compile Include="DataObjectValueTypeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
