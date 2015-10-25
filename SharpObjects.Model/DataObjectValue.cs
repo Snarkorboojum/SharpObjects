@@ -15,19 +15,19 @@ namespace SharpObjects.Model
 		[FieldOffset(0)] // size 1 byte
 		private readonly DataObjectValueType _type;
 
-		//skip 3 bytes to align reference type field
+		// skip 3 bytes to align reference type field
 
-		[FieldOffset(4)] // size 1 byte
-		private readonly Boolean _booleanValue;
+		[FieldOffset(4)]
+		private readonly Boolean _booleanValue; // size 1 byte
 
-		[FieldOffset(4)] // size 4 bytes
-		private readonly Int32 _intValue;
+		[FieldOffset(4)]
+		private readonly Int32 _intValue; // size 4 bytes
 
-		[FieldOffset(4)] // size 4 bytes
-		private readonly Single _singleValue;
+		[FieldOffset(4)]
+		private readonly Single _singleValue; // size 4 bytes
 
-		[FieldOffset(8)] // should be aligned tou 4 and be the last one to work on Any CPU
-		private readonly Object _referenceTypeValue;
+		[FieldOffset(8)] // should be aligned to 4 and be the last one to work on Any CPU
+		private readonly Object _referenceTypeValue; // size 4 or 8 bytes
 
 		#endregion
 
@@ -106,23 +106,16 @@ namespace SharpObjects.Model
 		{
 			get
 			{
-				switch (_type)
-				{
-					case DataObjectValueType.None:
-						return false;
+				if (_type == DataObjectValueType.None)
+					return false;
 
-					case DataObjectValueType.Boolean:
-					case DataObjectValueType.Integer:
-					case DataObjectValueType.Float:
-						return true;
+				if (_type.HasFlag(DataObjectValueType.ValueType))
+					return true;
 
-					case DataObjectValueType.String:
-					case DataObjectValueType.Object:
-						return _referenceTypeValue != null;
+				if (_type.HasFlag(DataObjectValueType.Object))
+					return _referenceTypeValue != null;
 
-					default:
-						throw new InvalidOperationException("Can not determine the existence of value. Unknown value type");
-				}
+				throw new InvalidOperationException("Can not determine the existence of value. Unknown value type");
 			}
 		}
 
