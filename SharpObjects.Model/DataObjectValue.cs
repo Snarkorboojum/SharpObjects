@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
@@ -102,6 +103,7 @@ namespace SharpObjects.Model
 
 		#endregion
 
+		[PublicAPI]
 		public Boolean HasValue
 		{
 			get
@@ -119,7 +121,8 @@ namespace SharpObjects.Model
 			}
 		}
 
-		private Object BoxedValue
+		[PublicAPI]
+		public Object BoxedValue
 		{
 			get
 			{
