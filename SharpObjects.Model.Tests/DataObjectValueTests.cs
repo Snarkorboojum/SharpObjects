@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.InteropServices;
 
 namespace SharpObjects.Model.Tests
@@ -11,7 +12,8 @@ namespace SharpObjects.Model.Tests
 		{
 			var dataObjectValue = new DataObjectValue();
 			var sizeOfDataObjectValue = Marshal.SizeOf(dataObjectValue);
-			Assert.AreEqual(12, sizeOfDataObjectValue); // 12 for x86 and 16 for x64
+
+			Assert.AreEqual(8 + IntPtr.Size, sizeOfDataObjectValue);
 		}
 	}
 }
