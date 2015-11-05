@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
+	[PublicAPI]
 	public class DataObject : IDictionary<String, DataObjectValue>
 	{
 		private readonly Dictionary<String, DataObjectValue> _valueStore;
 
+		[PublicAPI]
 		public DataObject()
 		{
 			_valueStore = new Dictionary<String, DataObjectValue>();
 		}
 
+		[PublicAPI]
 		public DataObjectValue GetPropertyValue(String propertyName)
 		{
 			if (propertyName == null)
@@ -24,6 +28,7 @@ namespace SharpObjects.Model
 				: default(DataObjectValue);
 		}
 
+		[PublicAPI]
 		public void SetPropertyValue(String propertyName, DataObjectValue propertyValue)
 		{
 			if (propertyName == null)
@@ -32,6 +37,7 @@ namespace SharpObjects.Model
 			_valueStore[propertyValue] = propertyValue;
 		}
 
+		[PublicAPI]
 		public Dictionary<String, DataObjectValue>.Enumerator GetEnumerator()
 		{
 			return _valueStore.GetEnumerator();
