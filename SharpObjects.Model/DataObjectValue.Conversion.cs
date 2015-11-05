@@ -33,19 +33,19 @@ namespace SharpObjects.Model
 
 		public static implicit operator Boolean(DataObjectValue dataObjectValue)
 		{
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Boolean))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
 				return dataObjectValue._booleanValue;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Integer))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
 				return dataObjectValue._intValue > 0;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Float))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return dataObjectValue._singleValue > 0;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Object))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object))
 				return !String.IsNullOrEmpty((String)dataObjectValue._referenceTypeValue);
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Object))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object))
 				return dataObjectValue._referenceTypeValue != null;
 
 			if (dataObjectValue._type == DataObjectValueType.None)
@@ -74,16 +74,16 @@ namespace SharpObjects.Model
 
 		public static implicit operator String(DataObjectValue dataObjectValue)
 		{
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.String))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
 				return (String)dataObjectValue._referenceTypeValue;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Boolean))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
 				return dataObjectValue._booleanValue ? Boolean.TrueString : Boolean.FalseString;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Integer))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
 				return dataObjectValue._intValue.ToString();
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Float))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return dataObjectValue._singleValue.ToString(CultureInfo.InvariantCulture);
 
 			if (dataObjectValue._type == DataObjectValueType.None)
@@ -96,13 +96,13 @@ namespace SharpObjects.Model
 
 		private static Int32? CastToInteger(DataObjectValue dataObjectValue)
 		{
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Integer))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
 				return dataObjectValue._intValue;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Boolean))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
 				return dataObjectValue._booleanValue ? 1 : 0;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Float))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return (Int32)dataObjectValue._singleValue;
 
 			if (dataObjectValue._type == DataObjectValueType.None)
@@ -113,13 +113,13 @@ namespace SharpObjects.Model
 
 		private static Single? CastToFloat(DataObjectValue dataObjectValue)
 		{
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Float))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return dataObjectValue._singleValue;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Boolean))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
 				return dataObjectValue._booleanValue ? 1.0f : 0.0f;
 
-			if (dataObjectValue._type.HasFlag(DataObjectValueType.Integer))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
 				return dataObjectValue._intValue;
 
 			if (dataObjectValue._type == DataObjectValueType.None)

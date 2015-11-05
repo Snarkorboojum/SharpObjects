@@ -6,7 +6,7 @@ namespace SharpObjects.Model
 	internal static class DataObjectValueTypeExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Boolean HasFlag(this DataObjectValue.DataObjectValueType source, DataObjectValue.DataObjectValueType flag)
+		internal static Boolean HasFlagFast(this DataObjectValue.DataObjectValueType source, DataObjectValue.DataObjectValueType flag)
 		{
 			var sourceValue = (Byte)source;
 			var flagValue = (Byte)flag;

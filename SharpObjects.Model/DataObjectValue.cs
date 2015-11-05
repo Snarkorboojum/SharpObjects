@@ -111,10 +111,10 @@ namespace SharpObjects.Model
 				if (_type == DataObjectValueType.None)
 					return false;
 
-				if (_type.HasFlag(DataObjectValueType.ValueType))
+				if (_type.HasFlagFast(DataObjectValueType.ValueType))
 					return true;
 
-				if (_type.HasFlag(DataObjectValueType.Object))
+				if (_type.HasFlagFast(DataObjectValueType.Object))
 					return _referenceTypeValue != null;
 
 				throw new InvalidOperationException("Can not determine the existence of value. Unknown value type");

@@ -16,13 +16,13 @@ namespace SharpObjects.Model
 				if (_type == DataObjectValueType.None)
 					return hashCode;
 
-				if (_type.HasFlag(DataObjectValueType.Boolean))
+				if (_type.HasFlagFast(DataObjectValueType.Boolean))
 					return _booleanValue.GetHashCode();
 
-				if (_type.HasFlag(DataObjectValueType.Integer))
+				if (_type.HasFlagFast(DataObjectValueType.Integer))
 					return _intValue.GetHashCode();
 
-				if (_type.HasFlag(DataObjectValueType.Float))
+				if (_type.HasFlagFast(DataObjectValueType.Float))
 				{
 					var singleRounded = (Int32)_singleValue;
 					return _singleValue - singleRounded == 0
@@ -104,13 +104,13 @@ namespace SharpObjects.Model
 			if (typeConsistencyCheck)
 				throw new InvalidOperationException("Cannot compare values with different types");
 
-			if (other._type.HasFlag(DataObjectValueType.Boolean))
+			if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 				return _booleanValue == other._booleanValue;
 
-			if (other._type.HasFlag(DataObjectValueType.Integer))
+			if (other._type.HasFlagFast(DataObjectValueType.Integer))
 				return _booleanValue == other._intValue > 0;
 
-			if (other._type.HasFlag(DataObjectValueType.Float))
+			if (other._type.HasFlagFast(DataObjectValueType.Float))
 				return _booleanValue == other._singleValue > 0;
 
 			if (other._type == DataObjectValueType.String)
@@ -129,13 +129,13 @@ namespace SharpObjects.Model
 				throw new InvalidOperationException("Cannot compare values with different types");
 
 
-			if (other._type.HasFlag(DataObjectValueType.Integer))
+			if (other._type.HasFlagFast(DataObjectValueType.Integer))
 				return _intValue == other._intValue;
 
-			if (other._type.HasFlag(DataObjectValueType.Boolean))
+			if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 				return _intValue > 0 == other._booleanValue;
 
-			if (other._type.HasFlag(DataObjectValueType.Float))
+			if (other._type.HasFlagFast(DataObjectValueType.Float))
 			{
 				// ReSharper disable once RedundantCast
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -155,13 +155,13 @@ namespace SharpObjects.Model
 			if (typeConsistencyCheck)
 				throw new InvalidOperationException("Cannot compare values with different types");
 
-			if (other._type.HasFlag(DataObjectValueType.Float))
+			if (other._type.HasFlagFast(DataObjectValueType.Float))
 				return _singleValue == other._singleValue;
 
 			if (other._type == DataObjectValueType.Boolean)
 				return _singleValue > 0 == other._booleanValue;
 
-			if (other._type.HasFlag(DataObjectValueType.Integer))
+			if (other._type.HasFlagFast(DataObjectValueType.Integer))
 				// ReSharper disable once RedundantCast
 				return _singleValue == (Single)other._intValue;
 

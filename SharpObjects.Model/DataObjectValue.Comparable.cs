@@ -16,7 +16,7 @@ namespace SharpObjects.Model
 			if (other._type == DataObjectValueType.None)
 				return greaterThan;
 
-			if (_type.HasFlag(DataObjectValueType.Boolean))
+			if (_type.HasFlagFast(DataObjectValueType.Boolean))
 			{
 				var otherAsBoolean = (Boolean)other;
 
@@ -25,12 +25,12 @@ namespace SharpObjects.Model
 					: (otherAsBoolean ? lessThan : @equals);
 			}
 
-			if (_type.HasFlag(DataObjectValueType.Integer))
+			if (_type.HasFlagFast(DataObjectValueType.Integer))
 			{
-				if (other._type.HasFlag(DataObjectValueType.Boolean))
+				if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 					return -1 * other.CompareTo(this);
 
-				if (other._type.HasFlag(DataObjectValueType.Float))
+				if (other._type.HasFlagFast(DataObjectValueType.Float))
 					return ((Single)_intValue).CompareTo(other._singleValue);
 
 				var otherAsInteger = CastToInteger(other);
@@ -39,9 +39,9 @@ namespace SharpObjects.Model
 					: _intValue.CompareTo(otherAsInteger.Value);
 			}
 
-			if (_type.HasFlag(DataObjectValueType.Float))
+			if (_type.HasFlagFast(DataObjectValueType.Float))
 			{
-				if (other._type.HasFlag(DataObjectValueType.Boolean))
+				if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 					return -1 * other.CompareTo(this);
 
 				var otherAsFloat = CastToFloat(other);
@@ -50,9 +50,9 @@ namespace SharpObjects.Model
 					: _singleValue.CompareTo(otherAsFloat.Value);
 			}
 
-			if (_type.HasFlag(DataObjectValueType.String))
+			if (_type.HasFlagFast(DataObjectValueType.String))
 			{
-				if (other._type.HasFlag(DataObjectValueType.Boolean))
+				if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 				{
 					if (other._booleanValue)
 						return String.IsNullOrEmpty((String)_referenceTypeValue) ? lessThan : equals;
