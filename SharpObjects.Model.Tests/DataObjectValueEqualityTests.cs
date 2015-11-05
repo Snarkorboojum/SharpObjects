@@ -163,7 +163,7 @@ namespace SharpObjects.Model.Tests
 			Assert.IsTrue(areEqualOperatorBackward, $"Value '{value2.ToString()}'(2) not equals to value '{value1.ToString()}'(1)");
 
 
-			// DataObjectValue.Equsls(DataObjectValue) check
+			// DataObjectValue.Equals(DataObjectValue) check
 			var areEqualForward = value1.Equals(value2);
 			var areEqualBackward = value2.Equals(value1);
 
@@ -202,7 +202,7 @@ namespace SharpObjects.Model.Tests
 			Assert.IsTrue(areEqualOperatorForward, $"Value '{value1.ToString()}'(1) equals to value '{value2.ToString()}'(2)");
 			Assert.IsTrue(areEqualOperatorBackward, $"Value '{value2.ToString()}'(2) equals to value '{value1.ToString()}'(1)");
 
-			// DataObjectValue.Equsls(DataObjectValue) check
+			// DataObjectValue.Equals(DataObjectValue) check
 			var areEqualForward = value1.Equals(value2);
 			var areEqualBackward = value2.Equals(value1);
 
