@@ -78,6 +78,7 @@ namespace SharpObjects.Model.Tests
 			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("-1.0"), skipHashCheck: true);
 		}
 
+		[TestMethod]
 		public void IntAndBooleanValuesTest()
 		{
 			AssertAreEqual(new DataObjectValue(1), new DataObjectValue(true));
