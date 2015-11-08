@@ -39,6 +39,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataObjectValue.Arithmetics.cs">
+      <DependentUpon>DataObjectValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataObject.cs" />
     <Compile Include="DataObjectValue.Equatable.cs">
       <DependentUpon>DataObjectValue.cs</DependentUpon>

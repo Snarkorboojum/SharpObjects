@@ -15,14 +15,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="SharpObjects.Model.DataObjectValueTypeExtensions">
-    <Position X="18.25" Y="10.5" Width="5.25" />
+    <Position X="19.25" Y="10.5" Width="5.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataObjectValueTypeExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="SharpObjects.Model.DataObjectValue">
-    <Position X="12.75" Y="1.25" Width="5" />
+    <Position X="12.75" Y="1.25" Width="5.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -34,7 +34,7 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAECAAAQkgACBAghgDQAAAIgAAACAIAAih2A=</HashCode>
+      <HashCode>ACIAAAAAAECAAAQkwAWBAghgDQAAAIgAAACEIAAih2g=</HashCode>
       <FileName>DataObjectValue.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
