@@ -8,7 +8,7 @@ namespace SharpObjects.Model.Tests
 	public sealed class DataObjectValueCastTests
 	{
 		[TestMethod]
-		public void DefalutValuesTest()
+		public void DefalutValuesCastTest()
 		{
 			var testedValue1 = default(DataObjectValue);
 			AssertCast(testedValue1, false, 0, 0f, null);
@@ -18,7 +18,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void BooleanValuesTest()
+		public void BooleanValuesCastTest()
 		{
 			var testedTrueValue = new DataObjectValue(true);
 			AssertCast(testedTrueValue, true, 1, 1.0f, "True");
@@ -28,9 +28,9 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void IntValuesTest()
+		public void IntValuesCastTest()
 		{
-			var testedValue1 = new DataObjectValue(0);
+			var testedValue1 = DataObjectValue.Zero;
 			AssertCast(testedValue1, false, 0, 0.0f, "0");
 
 			var testedValue2 = new DataObjectValue(-1);
@@ -44,7 +44,7 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[TestMethod]
-		public void SingleValuesTest()
+		public void SingleValuesCastTest()
 		{
 			var testedValue1 = new DataObjectValue(0f);
 			AssertCast(testedValue1, false, 0, 0.0f, "0");
@@ -66,7 +66,8 @@ namespace SharpObjects.Model.Tests
 		}
 
 		[SuppressMessage("ReSharper", "RedundantCast")]
-		public void StringValuesTest()
+		[TestMethod]
+		public void StringValuesCastTest()
 		{
 			AssertCast(new DataObjectValue((String)null), false, 0, 0.0f, null);
 			AssertCast(new DataObjectValue(String.Empty), false, 0, 0.0f, "");
