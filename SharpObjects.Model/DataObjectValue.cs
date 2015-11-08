@@ -11,6 +11,16 @@ namespace SharpObjects.Model
 	[DebuggerDisplay("{_type} {BoxedValue}")]
 	public partial struct DataObjectValue
 	{
+		#region Constants
+
+		[PublicAPI]
+		public static DataObjectValue Nothing;
+
+		[PublicAPI]
+		public static DataObjectValue Zero = new DataObjectValue(0);
+
+		#endregion
+
 		#region Fields
 
 		[FieldOffset(0)] // size 1 byte
@@ -154,6 +164,9 @@ namespace SharpObjects.Model
 				}
 			}
 		}
+
+		[PublicAPI]
+		public Boolean IsNumeric => _type.HasFlagFast(DataObjectValueType.Integer) || _type.HasFlagFast(DataObjectValueType.Float);
 
 		public override String ToString()
 		{

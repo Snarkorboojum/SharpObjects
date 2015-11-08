@@ -25,7 +25,7 @@ namespace SharpObjects.Model
 			DataObjectValue result;
 			return _valueStore.TryGetValue(propertyName, out result)
 				? result
-				: default(DataObjectValue);
+				: DataObjectValue.Nothing;
 		}
 
 		[PublicAPI]
