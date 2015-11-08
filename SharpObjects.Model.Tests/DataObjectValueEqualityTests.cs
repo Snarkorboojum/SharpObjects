@@ -10,47 +10,60 @@ namespace SharpObjects.Model.Tests
 		#region Same types
 
 		[TestMethod]
-		public void EmptyValuesTest()
+		public void EmptyValuesEqualityTest()
 		{
 			AssertAreEqual(default(DataObjectValue), default(DataObjectValue));
 			AssertAreEqual(default(DataObjectValue), new DataObjectValue());
+			AssertAreEqual(default(DataObjectValue), DataObjectValue.Nothing);
+
 			AssertAreEqual(new DataObjectValue(), new DataObjectValue());
+			AssertAreEqual(new DataObjectValue(), DataObjectValue.Nothing);
 		}
 
 		[TestMethod]
-		public void BooleanValuesTest()
+		public void ZeroValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue(true));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue(false));
-
-			AssertAreNotEqual(new DataObjectValue(true), new DataObjectValue(false));
+			AssertAreEqual(false, DataObjectValue.Zero);
+			AssertAreEqual(0, DataObjectValue.Zero);
+			AssertAreEqual(0f, DataObjectValue.Zero);
+			AssertAreEqual("0", DataObjectValue.Zero);
+			AssertAreEqual("0.0", DataObjectValue.Zero);
 		}
 
 		[TestMethod]
-		public void IntValuesTest()
+		public void BooleanValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(0), new DataObjectValue(0));
-			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(5));
+			AssertAreEqual(true, true);
+			AssertAreEqual(false, false);
+
+			AssertAreNotEqual(true, false);
 		}
 
 		[TestMethod]
-		public void SingleValuesTest()
+		public void IntValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue(0f));
-			AssertAreEqual(new DataObjectValue(5f), new DataObjectValue(5f));
-			AssertAreEqual(new DataObjectValue(5.45f), new DataObjectValue(5.45f));
-			AssertAreNotEqual(new DataObjectValue(5.45f), new DataObjectValue(5.4f));
+			AssertAreEqual(DataObjectValue.Zero, DataObjectValue.Zero);
+			AssertAreEqual(5, 5);
 		}
 
 		[TestMethod]
-		public void StringValuesTest()
+		public void SingleValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(""), new DataObjectValue(""));
+			AssertAreEqual(0f, 0f);
+			AssertAreEqual(5f, 5f);
+			AssertAreEqual(5.45f, 5.45f);
+			AssertAreNotEqual(5.45f, 5.4f);
+		}
+
+		[TestMethod]
+		public void StringValuesEqualityTest()
+		{
+			AssertAreEqual("", "");
 
 			// ReSharper disable once RedundantToStringCall
-			AssertAreEqual(new DataObjectValue(""), new DataObjectValue(String.Empty.ToString()));
-			AssertAreNotEqual(new DataObjectValue("abc"), new DataObjectValue("ABC"));
-			AssertAreEqual(new DataObjectValue("abc"), new DataObjectValue("abc"));
+			AssertAreEqual("", String.Empty);
+			AssertAreNotEqual("abc", "ABC");
+			AssertAreEqual("abc", "abc");
 		}
 
 		#endregion
@@ -58,86 +71,87 @@ namespace SharpObjects.Model.Tests
 		#region Cross typess
 
 		[TestMethod]
-		public void BooleanAndStringValuesTest()
+		public void BooleanAndStringValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("True"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("TRUE"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("true"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("tRuE"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("1"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("1.0"));
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("5"), skipHashCheck: true);
-			AssertAreEqual(new DataObjectValue(true), new DataObjectValue("0.2"), skipHashCheck: true);
+			AssertAreEqual(true, "True");
+			AssertAreEqual(true, "TRUE");
+			AssertAreEqual(true, "true");
+			AssertAreEqual(true, "tRuE");
+			AssertAreEqual(true, "1");
+			AssertAreEqual(true, "1.0");
+			AssertAreEqual(true, "5", skipHashCheck: true);
+			AssertAreEqual(true, "0.2", skipHashCheck: true);
 
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("False"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("FALSE"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("false"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("fAlSe"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("0"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("0.0"));
-			AssertAreEqual(new DataObjectValue(false), new DataObjectValue("-1.0"), skipHashCheck: true);
+			AssertAreEqual(false, "False");
+			AssertAreEqual(false, "FALSE");
+			AssertAreEqual(false, "false");
+			AssertAreEqual(false, "fAlSe");
+			AssertAreEqual(false, "0");
+			AssertAreEqual(false, "0.0");
+			AssertAreEqual(false, new DataObjectValue("-1.0"), skipHashCheck: true);
 		}
 
 		[TestMethod]
-		public void IntAndBooleanValuesTest()
+		public void IntAndBooleanValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(1), new DataObjectValue(true));
-			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(true), skipHashCheck: true);
-			AssertAreEqual(new DataObjectValue(0), new DataObjectValue(false));
+			AssertAreEqual(1, true);
+			AssertAreEqual(5, true, skipHashCheck: true);
+			AssertAreEqual(DataObjectValue.Zero, false);
 
-			AssertAreNotEqual(new DataObjectValue(3), new DataObjectValue(false));
+			AssertAreNotEqual(3, false);
 		}
 
 		[TestMethod]
-		public void IntAndSingleValuesTest()
+		public void IntAndSingleValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(0), new DataObjectValue(0f));
-			AssertAreEqual(new DataObjectValue(5), new DataObjectValue(5f));
+			AssertAreEqual(DataObjectValue.Zero, 0f);
+			AssertAreEqual(5, 5f);
 			AssertAreEqual(new DataObjectValue(-5), new DataObjectValue(-5f));
 
-			AssertAreNotEqual(new DataObjectValue(5), new DataObjectValue(5.001f));
+			AssertAreNotEqual(5, 5.001f);
 		}
 
 		[TestMethod]
-		public void IntAndStringValuesTest()
+		public void IntAndStringValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(0), new DataObjectValue("0"));
-			AssertAreEqual(new DataObjectValue(5), new DataObjectValue("5"));
+			AssertAreEqual(DataObjectValue.Zero, "0");
+			AssertAreEqual(5, "5");
 
 			// ReSharper disable RedundantCast
-			AssertAreNotEqual(new DataObjectValue(0), new DataObjectValue((String)null), skipHashCheck: true);
-			AssertAreNotEqual(new DataObjectValue(0), new DataObjectValue(String.Empty), skipHashCheck: true);
+			AssertAreNotEqual(DataObjectValue.Zero, new DataObjectValue((String)null), skipHashCheck: true);
+			AssertAreNotEqual(DataObjectValue.Zero, String.Empty, skipHashCheck: true);
 			// ReSharper restore RedundantCast
 
-			AssertAreNotEqual(new DataObjectValue(6), new DataObjectValue("5"));
-			AssertAreNotEqual(new DataObjectValue(6), new DataObjectValue("6asfasdf"));
-		}
-
-		public void SingleAndBooleanValuesTest()
-		{
-			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue(false));
-			AssertAreEqual(new DataObjectValue(1.0f), new DataObjectValue(true));
-
-			AssertAreEqual(new DataObjectValue(5f), new DataObjectValue(true), skipHashCheck: true);
-			AssertAreNotEqual(new DataObjectValue(3f), new DataObjectValue(false));
+			AssertAreNotEqual(6, "5");
+			AssertAreNotEqual(6, "6asfasdf");
 		}
 
 		[TestMethod]
-		public void SingleAndStringValuesTest()
+		public void SingleAndBooleanValuesEqualityTest()
 		{
-			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue("0"));
-			AssertAreEqual(new DataObjectValue(0f), new DataObjectValue("0.0"));
-			AssertAreEqual(new DataObjectValue(4f), new DataObjectValue("4"));
-			AssertAreEqual(new DataObjectValue(4f), new DataObjectValue("4.0"));
-			AssertAreEqual(new DataObjectValue(5.45f), new DataObjectValue("5.45"));
+			AssertAreEqual(0f, false);
+			AssertAreEqual(1.0f, true);
 
-			AssertAreNotEqual(new DataObjectValue(5.46f), new DataObjectValue("5.45"));
-			AssertAreNotEqual(new DataObjectValue(5.46f), new DataObjectValue("5"));
-			AssertAreNotEqual(new DataObjectValue(5.46f), new DataObjectValue("6"));
+			AssertAreEqual(5f, true, skipHashCheck: true);
+			AssertAreNotEqual(3f, false);
+		}
+
+		[TestMethod]
+		public void SingleAndStringValuesEqualityTest()
+		{
+			AssertAreEqual(0f, "0");
+			AssertAreEqual(0f, "0.0");
+			AssertAreEqual(4f, "4");
+			AssertAreEqual(4f, "4.0");
+			AssertAreEqual(5.45f, "5.45");
+
+			AssertAreNotEqual(5.46f, "5.45");
+			AssertAreNotEqual(5.46f, "5");
+			AssertAreNotEqual(5.46f, "6");
 
 			// ReSharper disable RedundantCast
-			AssertAreNotEqual(new DataObjectValue(0f), new DataObjectValue((String)null), skipHashCheck: true);
-			AssertAreNotEqual(new DataObjectValue(0.0f), new DataObjectValue(String.Empty), skipHashCheck: true);
+			AssertAreNotEqual(0f, new DataObjectValue((String)null), skipHashCheck: true);
+			AssertAreNotEqual(0.0f, String.Empty, skipHashCheck: true);
 			// ReSharper restore RedundantCast
 		}
 
