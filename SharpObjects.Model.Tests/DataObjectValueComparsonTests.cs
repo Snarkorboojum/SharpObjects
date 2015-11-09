@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SharpObjects.Model.Tests
@@ -7,6 +6,14 @@ namespace SharpObjects.Model.Tests
 	[TestClass]
 	public sealed class DataObjectValueComparsonTests
 	{
+		#region Constants
+
+		private const Int32 MinTrueInt = 1;
+
+		private const Single MinTrueSingle = 1.0f;
+
+		#endregion
+
 		#region Test Methods
 
 		[TestMethod]
@@ -142,6 +149,7 @@ namespace SharpObjects.Model.Tests
 
 			AssertComparison(0, " ");
 			AssertComparison(1, " ");
+			AssertComparison(3, " ");
 			AssertComparison(-1, " ");
 
 			AssertComparison(0, "0");
@@ -258,8 +266,8 @@ namespace SharpObjects.Model.Tests
 		private static void AssertComparison(Boolean value1, Int32 value2)
 		{
 			var expectedComparisonResult = value1
-				? (value2 > 0 ? 0 : +1)
-				: (value2 <= 0 ? 0 : -1);
+				? (value2 >= MinTrueInt ? 0 : +1)
+				: (value2 < MinTrueInt ? 0 : -1);
 
 			AssertComparison(new DataObjectValue(value1), new DataObjectValue(value2), expectedComparisonResult);
 		}
@@ -267,8 +275,8 @@ namespace SharpObjects.Model.Tests
 		private static void AssertComparison(Boolean value1, Single value2)
 		{
 			var expectedComparisonResult = value1
-				? (value2 > 0f ? 0 : +1)
-				: (value2 <= 0f ? 0 : -1);
+				? (value2 >= MinTrueSingle ? 0 : +1)
+				: (value2 < MinTrueSingle ? 0 : -1);
 
 			AssertComparison(new DataObjectValue(value1), new DataObjectValue(value2), expectedComparisonResult);
 		}
@@ -384,13 +392,13 @@ namespace SharpObjects.Model.Tests
 		private static Int32 Compare(Int32 value1, String value2)
 		{
 			if (String.IsNullOrEmpty(value2))
-				return +1;
+				return value1.CompareTo(0);
 
 			if (Boolean.TrueString.Equals(value2, StringComparison.OrdinalIgnoreCase))
-				return value1 > 0 ? 0 : -1;
+				return value1 >= MinTrueInt ? 0 : -1;
 
 			if (Boolean.FalseString.Equals(value2, StringComparison.OrdinalIgnoreCase))
-				return value1 > 0 ? +1 : 0;
+				return value1 >= MinTrueInt ? +1 : 0;
 
 			Int32 parsedIntegerValue;
 			if (Int32.TryParse(value2, out parsedIntegerValue))
@@ -400,43 +408,27 @@ namespace SharpObjects.Model.Tests
 			if (Single.TryParse(value2, out parsedSingleValue))
 				return ((Single)value1).CompareTo(parsedSingleValue);
 
-			var intString = value1.ToString();
-			var comparison = String.CompareOrdinal(intString, value2);
-
-			if (comparison > 0)
-				return 1;
-
-			if (comparison < 0)
-				return -1;
-
-			return 0;
+			var stringLength = value2.Length;
+			return value1.CompareTo(stringLength);
 		}
 
 		private static Int32 Compare(Single value1, String value2)
 		{
 			if (String.IsNullOrEmpty(value2))
-				return +1;
+				return value1.CompareTo(0.0f);
 
 			if (Boolean.TrueString.Equals(value2, StringComparison.OrdinalIgnoreCase))
-				return value1 > 0 ? 0 : -1;
+				return value1 >= MinTrueSingle ? 0 : -1;
 
 			if (Boolean.FalseString.Equals(value2, StringComparison.OrdinalIgnoreCase))
-				return value1 > 0 ? +1 : 0;
+				return value1 >= MinTrueSingle ? +1 : 0;
 
 			Single parsedSingleValue;
 			if (Single.TryParse(value2, out parsedSingleValue))
 				return value1.CompareTo(parsedSingleValue);
 
-			var intString = value1.ToString(CultureInfo.InvariantCulture);
-			var comparison = String.CompareOrdinal(intString, value2);
-
-			if (comparison > 0)
-				return 1;
-
-			if (comparison < 0)
-				return -1;
-
-			return 0;
+			var stringLength = value2.Length;
+			return value1.CompareTo(stringLength);
 		}
 
 		#endregion

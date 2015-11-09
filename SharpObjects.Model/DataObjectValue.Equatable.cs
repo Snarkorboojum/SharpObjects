@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
@@ -30,7 +31,12 @@ namespace SharpObjects.Model
 						: _singleValue.GetHashCode();
 				}
 
-				if (_type == DataObjectValueType.String || _type == DataObjectValueType.Object)
+				if (_type == DataObjectValueType.String)
+					return String.IsNullOrEmpty((String)_referenceTypeValue)
+						? 0
+						: _referenceTypeValue.GetHashCode();
+
+				if (_type == DataObjectValueType.Object)
 					return _referenceTypeValue?.GetHashCode() ?? 0;
 
 				throw new InvalidOperationException("Cannot perform 'Get Hash Code' operation. Unknown value type");
@@ -60,6 +66,7 @@ namespace SharpObjects.Model
 			return Equals(other, typeConsistencyCheck: false);
 		}
 
+		[PublicAPI]
 		public Boolean Equals(DataObjectValue other, Boolean typeConsistencyCheck)
 		{
 			if (other._type == DataObjectValueType.None)
@@ -111,10 +118,10 @@ namespace SharpObjects.Model
 				return _booleanValue == other._intValue > 0;
 
 			if (other._type.HasFlagFast(DataObjectValueType.Float))
-				return _booleanValue == other._singleValue > 0;
+				return _booleanValue == other._singleValue >= 1.0f;
 
-			if (other._type == DataObjectValueType.String)
-				return false;
+			if (other._type.HasFlagFast(DataObjectValueType.String))
+				return !_booleanValue == String.IsNullOrEmpty((String)other._referenceTypeValue);
 
 			return _booleanValue && other.HasValue;
 		}
@@ -128,7 +135,6 @@ namespace SharpObjects.Model
 			if (typeConsistencyCheck)
 				throw new InvalidOperationException("Cannot compare values with different types");
 
-
 			if (other._type.HasFlagFast(DataObjectValueType.Integer))
 				return _intValue == other._intValue;
 
@@ -141,6 +147,18 @@ namespace SharpObjects.Model
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				return ((Single)_intValue) == other._singleValue;
 			}
+
+			if (other._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)other._referenceTypeValue;
+				if (String.IsNullOrEmpty(stringValue))
+					return _intValue < MinTrueInt;
+
+				return _intValue == stringValue.Length;
+			}
+
+			if (other._type.HasFlagFast(DataObjectValueType.Object) && other._referenceTypeValue == null)
+				return _intValue == DefaultFalseInt;
 
 			return false;
 		}
@@ -158,16 +176,29 @@ namespace SharpObjects.Model
 			if (other._type.HasFlagFast(DataObjectValueType.Float))
 				return _singleValue == other._singleValue;
 
-			if (other._type == DataObjectValueType.Boolean)
-				return _singleValue > 0 == other._booleanValue;
+			if (other._type.HasFlagFast(DataObjectValueType.Boolean))
+				return _singleValue >= MinTrueSingle == other._booleanValue;
 
 			if (other._type.HasFlagFast(DataObjectValueType.Integer))
 				// ReSharper disable once RedundantCast
 				return _singleValue == (Single)other._intValue;
 
+			if (other._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)other._referenceTypeValue;
+				if (String.IsNullOrEmpty(stringValue))
+					return _singleValue < MinTrueSingle;
+
+				return _singleValue == stringValue.Length;
+			}
+
+			if (other._type.HasFlagFast(DataObjectValueType.Object) && other._referenceTypeValue == null)
+				return _singleValue == DefaultFalseSingle;
+
 			return false;
 		}
 
+		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
 		private Boolean StringEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
 		{
 			{
@@ -176,6 +207,18 @@ namespace SharpObjects.Model
 
 				if (typeConsistencyCheck)
 					throw new InvalidOperationException("Cannot compare values with different types");
+
+				if (other._type.HasFlagFast(DataObjectValueType.ValueType))
+				{
+					if (other._type.HasFlagFast(DataObjectValueType.Boolean))
+						return other._booleanValue == ComparisonIndex >= MinTrueInt;
+
+					if (other._type.HasFlagFast(DataObjectValueType.Integer))
+						return other._intValue == ComparisonIndex;
+
+					if (other._type.HasFlagFast(DataObjectValueType.Float))
+						return other._singleValue == ComparisonIndex;
+				}
 
 				if (other._type == DataObjectValueType.Object)
 					return other._referenceTypeValue == _referenceTypeValue; // reference equals

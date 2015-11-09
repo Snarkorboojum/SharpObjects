@@ -59,10 +59,13 @@ namespace SharpObjects.Model.Tests
 			AssertCast(testedValue4, true, 5, 5f, "5");
 
 			var testedValue5 = new DataObjectValue(0.1f);
-			AssertCast(testedValue5, true, 0, 0.1f, "0.1");
+			AssertCast(testedValue5, false, 0, 0.1f, "0.1");
 
-			var testedValue6 = new DataObjectValue(4.6f);
-			AssertCast(testedValue6, true, 4, 4.6f, "4.6");
+			var testedValue6 = new DataObjectValue(0.6f);
+			AssertCast(testedValue6, false, 0, 0.6f, "0.6");
+
+			var testedValue7 = new DataObjectValue(4.6f);
+			AssertCast(testedValue7, true, 4, 4.6f, "4.6");
 		}
 
 		[SuppressMessage("ReSharper", "RedundantCast")]
@@ -71,10 +74,10 @@ namespace SharpObjects.Model.Tests
 		{
 			AssertCast(new DataObjectValue((String)null), false, 0, 0.0f, null);
 			AssertCast(new DataObjectValue(String.Empty), false, 0, 0.0f, "");
-			AssertCast(new DataObjectValue("abc"), false, 0, 0.0f, "abc");
-			AssertCast(new DataObjectValue("0"), true, 0, 0.0f, "0");
+			AssertCast(new DataObjectValue("abc"), true, 3, 3.0f, "abc");
+			AssertCast(new DataObjectValue("0"), false, 0, 0.0f, "0");
 			AssertCast(new DataObjectValue("1"), true, 1, 1.0f, "1");
-			AssertCast(new DataObjectValue("-1"), false, -1, -1.0f, "1");
+			AssertCast(new DataObjectValue("-1"), false, -1, -1.0f, "-1");
 			AssertCast(new DataObjectValue("2.34"), true, 2, 2.34f, "2.34");
 			AssertCast(new DataObjectValue("4.721"), true, 4, 4.721f, "4.721");
 			AssertCast(new DataObjectValue("-4.721"), false, -4, -4.721f, "-4.721");
@@ -114,10 +117,31 @@ namespace SharpObjects.Model.Tests
 
 		private void AssertCast(DataObjectValue value, Boolean expectedBooleanValue, Int32 expectedIntegerValue, Single expectedFloatValue, String expectedStringValue)
 		{
+			AssertExpectedValueConsistenscy(expectedBooleanValue, expectedIntegerValue, expectedFloatValue, expectedStringValue);
+
 			AssertCast(value, expectedBooleanValue);
 			AssertCast(value, expectedIntegerValue);
 			AssertCast(value, expectedFloatValue);
 			AssertCast(value, expectedStringValue);
+		}
+
+		private void AssertExpectedValueConsistenscy(DataObjectValue expectedBooleanValue, DataObjectValue expectedIntegerValue, DataObjectValue expectedFloatValue, DataObjectValue expectedStringValue)
+		{
+			DataObjectValueEqualityTests.AssertAreEqual(expectedBooleanValue, expectedIntegerValue, skipHashCheck: true);
+			DataObjectValueEqualityTests.AssertAreEqual(expectedBooleanValue, expectedFloatValue, skipHashCheck: true);
+			DataObjectValueEqualityTests.AssertAreEqual(expectedBooleanValue, expectedStringValue, skipHashCheck: true);
+
+			DataObjectValueEqualityTests.AssertAreEqual(expectedIntegerValue, expectedBooleanValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedIntegerValue, expectedFloatValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedIntegerValue, expectedStringValue, skipHashCheck: true);
+
+			DataObjectValueEqualityTests.AssertAreEqual(expectedFloatValue, expectedBooleanValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedFloatValue, expectedIntegerValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedFloatValue, expectedStringValue, skipHashCheck: true);
+
+			DataObjectValueEqualityTests.AssertAreEqual(expectedStringValue, expectedBooleanValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedStringValue, expectedIntegerValue, skipHashCheck: true);
+			//DataObjectValueEqualityTests.AssertAreEqual(expectedStringValue, expectedFloatValue, skipHashCheck: true);
 		}
 
 		#endregion

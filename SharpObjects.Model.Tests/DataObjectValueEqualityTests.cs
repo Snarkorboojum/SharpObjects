@@ -59,11 +59,13 @@ namespace SharpObjects.Model.Tests
 		public void StringValuesEqualityTest()
 		{
 			AssertAreEqual("", "");
-
-			// ReSharper disable once RedundantToStringCall
 			AssertAreEqual("", String.Empty);
 			AssertAreNotEqual("abc", "ABC");
 			AssertAreEqual("abc", "abc");
+
+			AssertAreEqual("True", "abc", skipHashCheck: true);
+			AssertAreEqual("False", "", skipHashCheck: true);
+			AssertAreEqual("False", null, skipHashCheck: true);
 		}
 
 		#endregion
@@ -80,8 +82,11 @@ namespace SharpObjects.Model.Tests
 			AssertAreEqual(true, "1");
 			AssertAreEqual(true, "1.0");
 			AssertAreEqual(true, "5", skipHashCheck: true);
-			AssertAreEqual(true, "0.2", skipHashCheck: true);
+			AssertAreEqual(true, "abc", skipHashCheck: true);
 
+			AssertAreEqual(false, "0.2", skipHashCheck: true);
+			AssertAreEqual(false, (String)null);
+			AssertAreEqual(false, "");
 			AssertAreEqual(false, "False");
 			AssertAreEqual(false, "FALSE");
 			AssertAreEqual(false, "false");
@@ -118,8 +123,8 @@ namespace SharpObjects.Model.Tests
 			AssertAreEqual(5, "5");
 
 			// ReSharper disable RedundantCast
-			AssertAreNotEqual(DataObjectValue.Zero, new DataObjectValue((String)null), skipHashCheck: true);
-			AssertAreNotEqual(DataObjectValue.Zero, String.Empty, skipHashCheck: true);
+			AssertAreEqual(DataObjectValue.Zero, new DataObjectValue((String)null), skipHashCheck: true);
+			AssertAreEqual(DataObjectValue.Zero, String.Empty, skipHashCheck: true);
 			// ReSharper restore RedundantCast
 
 			AssertAreNotEqual(6, "5");
@@ -139,6 +144,8 @@ namespace SharpObjects.Model.Tests
 		[TestMethod]
 		public void SingleAndStringValuesEqualityTest()
 		{
+			AssertAreEqual(0f, null);
+			AssertAreEqual(0f, "");
 			AssertAreEqual(0f, "0");
 			AssertAreEqual(0f, "0.0");
 			AssertAreEqual(4f, "4");
@@ -149,9 +156,14 @@ namespace SharpObjects.Model.Tests
 			AssertAreNotEqual(5.46f, "5");
 			AssertAreNotEqual(5.46f, "6");
 
+
+			AssertAreNotEqual(5.46f, "abcde", skipHashCheck: true);
+			AssertAreNotEqual(5.46f, "abcdef", skipHashCheck: true);
+			AssertAreNotEqual(5.88f, "abcdef", skipHashCheck: true);
+
 			// ReSharper disable RedundantCast
-			AssertAreNotEqual(0f, new DataObjectValue((String)null), skipHashCheck: true);
-			AssertAreNotEqual(0.0f, String.Empty, skipHashCheck: true);
+			AssertAreEqual(0f, new DataObjectValue((String)null), skipHashCheck: true);
+			AssertAreEqual(0.0f, String.Empty, skipHashCheck: true);
 			// ReSharper restore RedundantCast
 		}
 
@@ -160,7 +172,7 @@ namespace SharpObjects.Model.Tests
 		#region Assertion methods
 
 		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
-		private static void AssertAreEqual(DataObjectValue value1, DataObjectValue value2, Boolean skipHashCheck = false)
+		internal static void AssertAreEqual(DataObjectValue value1, DataObjectValue value2, Boolean skipHashCheck = false)
 		{
 			// Hash check
 			var value1Hash = value1.GetHashCode();
@@ -168,7 +180,6 @@ namespace SharpObjects.Model.Tests
 
 			if (!skipHashCheck)
 				Assert.IsTrue(value1Hash == value2Hash, $"Different hash codes for '{value1.ToString()}' and '{value2.ToString()}'");
-
 
 			// Equality operator check
 			var areEqualOperatorForward = value1 == value2;
@@ -184,14 +195,7 @@ namespace SharpObjects.Model.Tests
 
 			Assert.IsTrue(areEqualForward, $"Value '{value1.ToString()}'(1) not equals to value '{value2.ToString()}'(2)");
 			Assert.IsTrue(areEqualBackward, $"Value '{value2.ToString()}'(2) not equals to value '{value1.ToString()}'(1)");
-
-			// DataDataObjectValue.CompareTo(DataObjectValue) check
-			var areEqualComparedForward = value1.CompareTo(value2);
-			var areEqualComparedBackward = value2.CompareTo(value1);
-
-			Assert.IsTrue(areEqualComparedForward == 0, $"Value '{value1.ToString()}'(1) compared with value '{value2.ToString()}'(2) is '{areEqualComparedForward}'");
-			Assert.IsTrue(areEqualComparedBackward == 0, $"Value '{value2.ToString()}'(2) compared with value '{value1.ToString()}'(1) is '{areEqualComparedBackward}'");
-
+			
 			// Object.Equals(Object) override check
 			var areEqualToObjectForward = value1.Equals((Object)value2);
 			var areEqialToObjectBackward = value2.Equals((Object)value1);
@@ -223,14 +227,7 @@ namespace SharpObjects.Model.Tests
 
 			Assert.IsFalse(areEqualForward, $"Value '{value1.ToString()}'(1) equals to value '{value2.ToString()}'(2)");
 			Assert.IsFalse(areEqualBackward, $"Value '{value2.ToString()}'(2) equals to value '{value1.ToString()}'(1)");
-
-			// DataDataObjectValue.CompareTo(DataObjectValue) check
-			var areEqualComparedForward = value1.CompareTo(value2);
-			var areEqualComparedBackward = value2.CompareTo(value1);
-
-			Assert.IsTrue(areEqualComparedForward != 0, $"Value '{value1.ToString()}'(1) compared with value '{value2.ToString()}'(2) is '{areEqualComparedForward}'");
-			Assert.IsTrue(areEqualComparedBackward != 0, $"Value '{value2.ToString()}'(2) compared with value '{value1.ToString()}'(1) is '{areEqualComparedBackward}'");
-
+			
 			// Object.Equals(Object) override check
 			var areEqualToObjectForward = value1.Equals((Object)value2);
 			var areEqialToObjectBackward = value2.Equals((Object)value1);

@@ -5,6 +5,18 @@ namespace SharpObjects.Model
 {
 	public partial struct DataObjectValue
 	{
+		#region Constants
+
+		private const Int32 MinTrueInt = 1;
+
+		private const Int32 DefaultFalseInt = 0;
+
+		private const Single MinTrueSingle = 1.0f;
+
+		private const Single DefaultFalseSingle = 0.0f;
+
+		#endregion
+
 		#region Conversion operators to DataObjectValue
 
 		public static implicit operator DataObjectValue(Boolean value)
@@ -37,12 +49,12 @@ namespace SharpObjects.Model
 				return dataObjectValue._booleanValue;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
-				return dataObjectValue._intValue > 0;
+				return dataObjectValue._intValue >= MinTrueInt;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
-				return dataObjectValue._singleValue > 0;
+				return dataObjectValue._singleValue >= MinTrueSingle;
 
-			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object))
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
 				return !String.IsNullOrEmpty((String)dataObjectValue._referenceTypeValue);
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object))
@@ -51,7 +63,7 @@ namespace SharpObjects.Model
 			if (dataObjectValue._type == DataObjectValueType.None)
 				return default(Boolean);
 
-			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Boolean)}'");
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(Boolean)}'");
 		}
 
 		public static implicit operator Int32(DataObjectValue dataObjectValue)
@@ -60,7 +72,7 @@ namespace SharpObjects.Model
 			if (castedValue.HasValue)
 				return castedValue.Value;
 
-			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Int32)}'");
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(Int32)}'");
 		}
 
 		public static implicit operator Single(DataObjectValue dataObjectValue)
@@ -69,7 +81,7 @@ namespace SharpObjects.Model
 			if (castedValue.HasValue)
 				return castedValue.Value;
 
-			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(Single)}'");
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(Single)}'");
 		}
 
 		public static implicit operator String(DataObjectValue dataObjectValue)
@@ -89,7 +101,7 @@ namespace SharpObjects.Model
 			if (dataObjectValue._type == DataObjectValueType.None)
 				return default(String);
 
-			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' to '{nameof(String)}'");
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(String)}'");
 		}
 
 		#endregion
@@ -100,10 +112,21 @@ namespace SharpObjects.Model
 				return dataObjectValue._intValue;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
-				return dataObjectValue._booleanValue ? 1 : 0;
+				return dataObjectValue._booleanValue ? MinTrueInt : DefaultFalseInt;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return (Int32)dataObjectValue._singleValue;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)dataObjectValue._referenceTypeValue;
+				return String.IsNullOrEmpty(stringValue)
+					? default(Int32)
+					: stringValue.Length;
+			}
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object) && dataObjectValue._referenceTypeValue == null)
+				return default(Int32);
 
 			if (dataObjectValue._type == DataObjectValueType.None)
 				return default(Int32);
@@ -117,10 +140,21 @@ namespace SharpObjects.Model
 				return dataObjectValue._singleValue;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
-				return dataObjectValue._booleanValue ? 1.0f : 0.0f;
+				return dataObjectValue._booleanValue ? MinTrueSingle : DefaultFalseSingle;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
 				return dataObjectValue._intValue;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)dataObjectValue._referenceTypeValue;
+				return String.IsNullOrEmpty(stringValue)
+					? default(Single)
+					: stringValue.Length;
+			}
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object) && dataObjectValue._referenceTypeValue == null)
+				return default(Single);
 
 			if (dataObjectValue._type == DataObjectValueType.None)
 				return default(Single);

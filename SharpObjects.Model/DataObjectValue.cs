@@ -92,16 +92,18 @@ namespace SharpObjects.Model
 			{
 				_intValue = parsedIntegerValue;
 				_type |= DataObjectValueType.Integer;
+				return;
 			}
-			else
-			{
-				Single parsedSingleValue;
-				if (!Single.TryParse(value, out parsedSingleValue))
-					return;
 
+			Single parsedSingleValue;
+			if (Single.TryParse(value, out parsedSingleValue))
+			{
 				_singleValue = parsedSingleValue;
 				_type |= DataObjectValueType.Float;
+				return;
 			}
+
+			_intValue = value.Length; // store lenght
 		}
 
 		public DataObjectValue(Object value)
@@ -173,7 +175,7 @@ namespace SharpObjects.Model
 			switch (_type)
 			{
 				case DataObjectValueType.None:
-					return String.Empty;
+					return "Unknown";
 
 				case DataObjectValueType.Boolean:
 					return _booleanValue ? Boolean.TrueString : Boolean.FalseString;
@@ -185,13 +187,22 @@ namespace SharpObjects.Model
 					return _singleValue.ToString(CultureInfo.InvariantCulture);
 
 				case DataObjectValueType.String:
+					var stringValue = (String)_referenceTypeValue;
+					if (stringValue == null)
+						return "null";
+
+					if (stringValue == String.Empty)
+						return "Empty";
+
+					return stringValue;
+
 				case DataObjectValueType.BooleanString:
 				case DataObjectValueType.IntegerString:
 				case DataObjectValueType.FloatString:
 					return (String)_referenceTypeValue;
 
 				case DataObjectValueType.Object:
-					return _referenceTypeValue?.ToString() ?? String.Empty;
+					return _referenceTypeValue?.ToString() ?? "null";
 
 				default:
 					throw new InvalidOperationException("Cannot perform 'To String' operation. Unknown value type");
