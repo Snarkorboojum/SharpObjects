@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DataObjectValueArithmeticsTests.cs" />
     <Compile Include="DataObjectValueCastTests.cs" />
     <Compile Include="DataObjectValueComparsonTests.cs" />
     <Compile Include="DataObjectValueTests.cs" />
