@@ -104,7 +104,7 @@ namespace SharpObjects.Model
 			}
 
 			Double parsedDoubleValue;
-			if (Double.TryParse(value, out parsedDoubleValue))
+			if (Double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedDoubleValue))
 			{
 				_doubleValue = parsedDoubleValue;
 				_type |= DataObjectValueType.Double;
@@ -113,7 +113,7 @@ namespace SharpObjects.Model
 
 
 			Single parsedSingleValue;
-			if (Single.TryParse(value, out parsedSingleValue))
+			if (Single.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedSingleValue))
 			{
 				_singleValue = parsedSingleValue;
 				_type |= DataObjectValueType.Float;
@@ -232,7 +232,7 @@ namespace SharpObjects.Model
 		}
 
 		[Flags]
-		internal enum DataObjectValueType : UInt16
+		internal enum DataObjectValueType : UInt32
 		{
 			[DebuggerDisplay("None")]
 			None = 0,
@@ -259,10 +259,10 @@ namespace SharpObjects.Model
 			#region Reference Types
 
 			[DebuggerDisplay("[Object]")]
-			Object = 1 << 10,
+			Object = 1 << 30,
 
 			[DebuggerDisplay("[String]")]
-			String = 1 << 15 | Object,
+			String = 1u << 31 | Object,
 
 			[DebuggerDisplay("[Boolean from String]")]
 			BooleanString = String | Boolean,
@@ -281,7 +281,7 @@ namespace SharpObjects.Model
 			#region Combination Values
 
 			[DebuggerDisplay("[Numeric]")]
-			Numeric = Integer|Float| Double,
+			Numeric = Integer | Float | Double,
 
 			#endregion
 		}

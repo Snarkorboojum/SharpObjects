@@ -13,7 +13,7 @@ namespace SharpObjects.Model.Tests
 			var dataObjectValue = new DataObjectValue();
 			var sizeOfDataObjectValue = Marshal.SizeOf(dataObjectValue);
 
-			Assert.AreEqual(8 + IntPtr.Size, sizeOfDataObjectValue);
+			Assert.AreEqual(sizeof(UInt32) + sizeof(Double) + IntPtr.Size, sizeOfDataObjectValue);
 		}
 	}
 }
