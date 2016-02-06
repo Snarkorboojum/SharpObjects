@@ -1,11 +1,9 @@
 ﻿using System;
-using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
 	public partial struct DataObjectValue
 	{
-		[PublicAPI]
 		public DataObjectValue Negate()
 		{
 			switch (_type)
@@ -22,12 +20,15 @@ namespace SharpObjects.Model
 				case DataObjectValueType.FloatString:
 					return new DataObjectValue(-_singleValue);
 
+				case DataObjectValueType.Double:
+				case DataObjectValueType.DoubleString:
+					return new DataObjectValue(-_doubleValue);
+
 				default:
 					return this;
 			}
 		}
 
-		[PublicAPI]
 		public DataObjectValue Add(DataObjectValue other)
 		{
 			if (_type == DataObjectValueType.None)
@@ -60,6 +61,9 @@ namespace SharpObjects.Model
 
 						if (other._type.HasFlagFast(DataObjectValueType.Float))
 							return new DataObjectValue(_intValue + other._singleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_intValue + other._doubleValue);
 					}
 					break;
 
@@ -69,16 +73,33 @@ namespace SharpObjects.Model
 						if (other._type.HasFlagFast(DataObjectValueType.Float))
 							return new DataObjectValue(_singleValue + other._singleValue);
 
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_singleValue + other._doubleValue);
+
 						if (other._type.HasFlagFast(DataObjectValueType.Integer))
 							return new DataObjectValue(_singleValue + other._intValue);
 					}
 					break;
+
+				case DataObjectValueType.Double:
+				case DataObjectValueType.DoubleString:
+					{
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_doubleValue + other._doubleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Float))
+							return new DataObjectValue(_doubleValue + other._singleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Integer))
+							return new DataObjectValue(_doubleValue + other._intValue);
+					}
+					break;
+
 			}
 
 			return this;
 		}
 
-		[PublicAPI]
 		public DataObjectValue Substact(DataObjectValue other)
 		{
 			if (_type == DataObjectValueType.None)
@@ -107,6 +128,9 @@ namespace SharpObjects.Model
 
 						if (other._type.HasFlagFast(DataObjectValueType.Float))
 							return new DataObjectValue(_intValue - other._singleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_intValue - other._doubleValue);
 					}
 					break;
 
@@ -116,10 +140,28 @@ namespace SharpObjects.Model
 						if (other._type.HasFlagFast(DataObjectValueType.Float))
 							return new DataObjectValue(_singleValue - other._singleValue);
 
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_singleValue - other._doubleValue);
+
 						if (other._type.HasFlagFast(DataObjectValueType.Integer))
 							return new DataObjectValue(_singleValue - other._intValue);
 					}
 					break;
+
+				case DataObjectValueType.Double:
+				case DataObjectValueType.DoubleString:
+					{
+						if (other._type.HasFlagFast(DataObjectValueType.Double))
+							return new DataObjectValue(_doubleValue - other._doubleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Float))
+							return new DataObjectValue(_doubleValue - other._singleValue);
+
+						if (other._type.HasFlagFast(DataObjectValueType.Integer))
+							return new DataObjectValue(_doubleValue - other._intValue);
+					}
+					break;
+
 			}
 
 			return Equals(other)

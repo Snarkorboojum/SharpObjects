@@ -15,6 +15,10 @@ namespace SharpObjects.Model
 
 		private const Single DefaultFalseSingle = 0.0f;
 
+		private const Double MinTrueDouble = 1.0d;
+
+		private const Double DefaultFalseDouble = 0.0d;
+
 		#endregion
 
 		#region Conversion operators to DataObjectValue
@@ -30,6 +34,11 @@ namespace SharpObjects.Model
 		}
 
 		public static implicit operator DataObjectValue(Single value)
+		{
+			return new DataObjectValue(value);
+		}
+
+		public static implicit operator DataObjectValue(Double value)
 		{
 			return new DataObjectValue(value);
 		}
@@ -53,6 +62,9 @@ namespace SharpObjects.Model
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return dataObjectValue._singleValue >= MinTrueSingle;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Double))
+				return dataObjectValue._singleValue >= MinTrueDouble;
 
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
 				return !String.IsNullOrEmpty((String)dataObjectValue._referenceTypeValue);
@@ -82,6 +94,15 @@ namespace SharpObjects.Model
 				return castedValue.Value;
 
 			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(Single)}'");
+		}
+
+		public static implicit operator Double(DataObjectValue dataObjectValue)
+		{
+			var castedValue = CastToDouble(dataObjectValue);
+			if (castedValue.HasValue)
+				return castedValue.Value;
+
+			throw new InvalidCastException($"Cannot cast '{nameof(DataObjectValue)}' with '{dataObjectValue.ToString()}' value to '{nameof(Double)}'");
 		}
 
 		public static implicit operator String(DataObjectValue dataObjectValue)
@@ -117,6 +138,9 @@ namespace SharpObjects.Model
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return (Int32)dataObjectValue._singleValue;
 
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Double))
+				return (Int32)dataObjectValue._doubleValue;
+
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
 			{
 				var stringValue = (String)dataObjectValue._referenceTypeValue;
@@ -139,6 +163,9 @@ namespace SharpObjects.Model
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
 				return dataObjectValue._singleValue;
 
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Double))
+				return (Single)dataObjectValue._doubleValue;
+
 			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
 				return dataObjectValue._booleanValue ? MinTrueSingle : DefaultFalseSingle;
 
@@ -158,6 +185,37 @@ namespace SharpObjects.Model
 
 			if (dataObjectValue._type == DataObjectValueType.None)
 				return default(Single);
+
+			return null;
+		}
+
+		private static Double? CastToDouble(DataObjectValue dataObjectValue)
+		{
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Float))
+				return dataObjectValue._singleValue;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Double))
+				return dataObjectValue._doubleValue;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Boolean))
+				return dataObjectValue._booleanValue ? MinTrueDouble : DefaultFalseDouble;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Integer))
+				return dataObjectValue._intValue;
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)dataObjectValue._referenceTypeValue;
+				return String.IsNullOrEmpty(stringValue)
+					? default(Double)
+					: stringValue.Length;
+			}
+
+			if (dataObjectValue._type.HasFlagFast(DataObjectValueType.Object) && dataObjectValue._referenceTypeValue == null)
+				return default(Double);
+
+			if (dataObjectValue._type == DataObjectValueType.None)
+				return default(Double);
 
 			return null;
 		}

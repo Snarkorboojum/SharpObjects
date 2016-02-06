@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
@@ -13,10 +12,8 @@ namespace SharpObjects.Model
 	{
 		#region Constants
 
-		[PublicAPI]
 		public static DataObjectValue Nothing;
 
-		[PublicAPI]
 		public static DataObjectValue Zero = new DataObjectValue(0);
 
 		#endregion
@@ -37,7 +34,10 @@ namespace SharpObjects.Model
 		[FieldOffset(4)]
 		private readonly Single _singleValue; // size 4 bytes
 
-		[FieldOffset(8)] // should be aligned to 4 and be the last one to work on Any CPU
+		[FieldOffset(4)]
+		private readonly Double _doubleValue; // size 8 bytes
+
+		[FieldOffset(12)] // should be aligned to 4 and be the last one to work on Any CPU
 		private readonly Object _referenceTypeValue; // size 4 or 8 bytes
 
 		#endregion
@@ -64,6 +64,14 @@ namespace SharpObjects.Model
 			_singleValue = value;
 			_type = DataObjectValueType.Float;
 		}
+
+		public DataObjectValue(Double value)
+			: this()
+		{
+			_doubleValue = value;
+			_type = DataObjectValueType.Double;
+		}
+
 
 		public DataObjectValue(String value)
 			: this()
@@ -95,6 +103,15 @@ namespace SharpObjects.Model
 				return;
 			}
 
+			Double parsedDoubleValue;
+			if (Double.TryParse(value, out parsedDoubleValue))
+			{
+				_doubleValue = parsedDoubleValue;
+				_type |= DataObjectValueType.Double;
+				return;
+			}
+
+
 			Single parsedSingleValue;
 			if (Single.TryParse(value, out parsedSingleValue))
 			{
@@ -115,7 +132,6 @@ namespace SharpObjects.Model
 
 		#endregion
 
-		[PublicAPI]
 		public Boolean HasValue
 		{
 			get
@@ -133,7 +149,6 @@ namespace SharpObjects.Model
 			}
 		}
 
-		[PublicAPI]
 		public Object BoxedValue
 		{
 			get
@@ -152,10 +167,14 @@ namespace SharpObjects.Model
 					case DataObjectValueType.Float:
 						return _singleValue;
 
+					case DataObjectValueType.Double:
+						return _doubleValue;
+
 					case DataObjectValueType.String:
 					case DataObjectValueType.BooleanString:
 					case DataObjectValueType.IntegerString:
 					case DataObjectValueType.FloatString:
+					case DataObjectValueType.DoubleString:
 						return _referenceTypeValue;
 
 					case DataObjectValueType.Object:
@@ -167,8 +186,7 @@ namespace SharpObjects.Model
 			}
 		}
 
-		[PublicAPI]
-		public Boolean IsNumeric => _type.HasFlagFast(DataObjectValueType.Integer) || _type.HasFlagFast(DataObjectValueType.Float);
+		public Boolean IsNumeric => _type.HasAnyOfFlags(DataObjectValueType.Numeric);
 
 		public override String ToString()
 		{
@@ -186,6 +204,9 @@ namespace SharpObjects.Model
 				case DataObjectValueType.Float:
 					return _singleValue.ToString(CultureInfo.InvariantCulture);
 
+				case DataObjectValueType.Double:
+					return _doubleValue.ToString(CultureInfo.InvariantCulture);
+
 				case DataObjectValueType.String:
 					var stringValue = (String)_referenceTypeValue;
 					if (stringValue == null)
@@ -199,6 +220,7 @@ namespace SharpObjects.Model
 				case DataObjectValueType.BooleanString:
 				case DataObjectValueType.IntegerString:
 				case DataObjectValueType.FloatString:
+				case DataObjectValueType.DoubleString:
 					return (String)_referenceTypeValue;
 
 				case DataObjectValueType.Object:
@@ -210,7 +232,7 @@ namespace SharpObjects.Model
 		}
 
 		[Flags]
-		internal enum DataObjectValueType : byte
+		internal enum DataObjectValueType : UInt16
 		{
 			[DebuggerDisplay("None")]
 			None = 0,
@@ -229,16 +251,18 @@ namespace SharpObjects.Model
 			[DebuggerDisplay("[Single]")]
 			Float = 1 << 3 | ValueType,
 
+			[DebuggerDisplay("[Double]")]
+			Double = 1 << 4 | ValueType,
+
 			#endregion
 
-			/// <summary>
-			/// The reference type value.
-			/// </summary>
+			#region Reference Types
+
 			[DebuggerDisplay("[Object]")]
-			Object = 1 << 4,
+			Object = 1 << 10,
 
 			[DebuggerDisplay("[String]")]
-			String = 1 << 5 | Object,
+			String = 1 << 15 | Object,
 
 			[DebuggerDisplay("[Boolean from String]")]
 			BooleanString = String | Boolean,
@@ -247,7 +271,19 @@ namespace SharpObjects.Model
 			IntegerString = String | Integer,
 
 			[DebuggerDisplay("[Single from String]")]
-			FloatString = String | Float
+			FloatString = String | Float,
+
+			[DebuggerDisplay("[Double from String]")]
+			DoubleString = String | Double,
+
+			#endregion
+
+			#region Combination Values
+
+			[DebuggerDisplay("[Numeric]")]
+			Numeric = Integer|Float| Double,
+
+			#endregion
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
@@ -25,10 +24,18 @@ namespace SharpObjects.Model
 
 				if (_type.HasFlagFast(DataObjectValueType.Float))
 				{
-					var singleRounded = (Int32)_singleValue;
-					return _singleValue - singleRounded == 0
-						? singleRounded.GetHashCode()
+					var floorValue = (Int32)_singleValue;
+					return _singleValue - floorValue == 0
+						? floorValue.GetHashCode()
 						: _singleValue.GetHashCode();
+				}
+
+				if (_type.HasFlagFast(DataObjectValueType.Double))
+				{
+					var floorValue = (Int32)_doubleValue;
+					return _doubleValue - floorValue == 0
+						? floorValue.GetHashCode()
+						: _doubleValue.GetHashCode();
 				}
 
 				if (_type == DataObjectValueType.String)
@@ -57,6 +64,9 @@ namespace SharpObjects.Model
 			if (other is Single)
 				return Equals(new DataObjectValue((Single)other), typeConsistencyCheck: false);
 
+			if (other is Double)
+				return Equals(new DataObjectValue((Single)other), typeConsistencyCheck: false);
+
 			var stringObject = other as String;
 			return Equals(stringObject != null ? new DataObjectValue(stringObject) : new DataObjectValue(other), typeConsistencyCheck: false);
 		}
@@ -66,7 +76,6 @@ namespace SharpObjects.Model
 			return Equals(other, typeConsistencyCheck: false);
 		}
 
-		[PublicAPI]
 		public Boolean Equals(DataObjectValue other, Boolean typeConsistencyCheck)
 		{
 			if (other._type == DataObjectValueType.None)
@@ -88,6 +97,10 @@ namespace SharpObjects.Model
 				case DataObjectValueType.Float:
 				case DataObjectValueType.FloatString:
 					return FloatEqualsTo(other, typeConsistencyCheck);
+
+				case DataObjectValueType.Double:
+				case DataObjectValueType.DoubleString:
+					return DoubleEqualsTo(other, typeConsistencyCheck);
 
 				case DataObjectValueType.String:
 					return StringEqualsTo(other, typeConsistencyCheck);
@@ -118,7 +131,10 @@ namespace SharpObjects.Model
 				return _booleanValue == other._intValue > 0;
 
 			if (other._type.HasFlagFast(DataObjectValueType.Float))
-				return _booleanValue == other._singleValue >= 1.0f;
+				return _booleanValue == other._singleValue >= MinTrueSingle;
+
+			if (other._type.HasFlagFast(DataObjectValueType.Double))
+				return _booleanValue == other._doubleValue >= MinTrueDouble;
 
 			if (other._type.HasFlagFast(DataObjectValueType.String))
 				return !_booleanValue == String.IsNullOrEmpty((String)other._referenceTypeValue);
@@ -146,6 +162,13 @@ namespace SharpObjects.Model
 				// ReSharper disable once RedundantCast
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				return ((Single)_intValue) == other._singleValue;
+			}
+
+			if (other._type.HasFlagFast(DataObjectValueType.Double))
+			{
+				// ReSharper disable once RedundantCast
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				return ((Double)_intValue) == other._doubleValue;
 			}
 
 			if (other._type.HasFlagFast(DataObjectValueType.String))
@@ -176,6 +199,9 @@ namespace SharpObjects.Model
 			if (other._type.HasFlagFast(DataObjectValueType.Float))
 				return _singleValue == other._singleValue;
 
+			if (other._type.HasFlagFast(DataObjectValueType.Double))
+				return _singleValue == other._doubleValue;
+
 			if (other._type.HasFlagFast(DataObjectValueType.Boolean))
 				return _singleValue >= MinTrueSingle == other._booleanValue;
 
@@ -194,6 +220,44 @@ namespace SharpObjects.Model
 
 			if (other._type.HasFlagFast(DataObjectValueType.Object) && other._referenceTypeValue == null)
 				return _singleValue == DefaultFalseSingle;
+
+			return false;
+		}
+
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
+		private Boolean DoubleEqualsTo(DataObjectValue other, Boolean typeConsistencyCheck)
+		{
+			if (other._type == DataObjectValueType.Double)
+				return _doubleValue == other._doubleValue;
+
+			if (typeConsistencyCheck)
+				throw new InvalidOperationException("Cannot compare values with different types");
+
+			if (other._type.HasFlagFast(DataObjectValueType.Float))
+				return _doubleValue == other._singleValue;
+
+			if (other._type.HasFlagFast(DataObjectValueType.Double))
+				return _doubleValue == other._doubleValue;
+
+			if (other._type.HasFlagFast(DataObjectValueType.Boolean))
+				return _doubleValue >= MinTrueDouble == other._booleanValue;
+
+			if (other._type.HasFlagFast(DataObjectValueType.Integer))
+				// ReSharper disable once RedundantCast
+				return _doubleValue == (Double)other._intValue;
+
+			if (other._type.HasFlagFast(DataObjectValueType.String))
+			{
+				var stringValue = (String)other._referenceTypeValue;
+				if (String.IsNullOrEmpty(stringValue))
+					return _doubleValue < MinTrueDouble;
+
+				return _doubleValue == stringValue.Length;
+			}
+
+			if (other._type.HasFlagFast(DataObjectValueType.Object) && other._referenceTypeValue == null)
+				return _doubleValue == DefaultFalseDouble;
 
 			return false;
 		}
@@ -218,6 +282,9 @@ namespace SharpObjects.Model
 
 					if (other._type.HasFlagFast(DataObjectValueType.Float))
 						return other._singleValue == ComparisonIndex;
+
+					if (other._type.HasFlagFast(DataObjectValueType.Double))
+						return other._doubleValue == ComparisonIndex;
 				}
 
 				if (other._type == DataObjectValueType.Object)

@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 
 namespace SharpObjects.Model
 {
@@ -28,7 +27,6 @@ namespace SharpObjects.Model
 			}
 		}
 
-		[PublicAPI]
 		public Int32 CompareTo(DataObjectValue other)
 		{
 			const Int32 equals = 0;
@@ -58,6 +56,9 @@ namespace SharpObjects.Model
 				if (other._type.HasFlagFast(DataObjectValueType.Float))
 					return ((Single)_intValue).CompareTo(other._singleValue);
 
+				if (other._type.HasFlagFast(DataObjectValueType.Float))
+					return ((Double)_intValue).CompareTo(other._doubleValue);
+
 				if (other._type == DataObjectValueType.String)
 					return _intValue.CompareTo(other.ComparisonIndex);
 
@@ -79,6 +80,20 @@ namespace SharpObjects.Model
 				return !otherAsFloat.HasValue
 					? greaterThan
 					: _singleValue.CompareTo(otherAsFloat.Value);
+			}
+
+			if (_type.HasFlagFast(DataObjectValueType.Double))
+			{
+				if (other._type.HasFlagFast(DataObjectValueType.Boolean))
+					return -1 * other.CompareTo(this);
+
+				if (other._type == DataObjectValueType.String)
+					return _singleValue.CompareTo(other.ComparisonIndex);
+
+				var otherAsDouble = CastToDouble(other);
+				return !otherAsDouble.HasValue
+					? greaterThan
+					: _doubleValue.CompareTo(otherAsDouble.Value);
 			}
 
 			if (_type.HasFlagFast(DataObjectValueType.String))
