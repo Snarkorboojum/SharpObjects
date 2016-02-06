@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace SharpObjects.Model
+namespace Kappa.Core.System
 {
 	public partial struct DataObjectValue : IEquatable<DataObjectValue>
 	{

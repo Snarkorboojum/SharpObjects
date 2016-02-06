@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace SharpObjects.Model
+namespace Kappa.Core.System
 {
 	[StructLayout(LayoutKind.Explicit, Pack = 1)]
 	[DebuggerDisplay("{_type} {BoxedValue}")]

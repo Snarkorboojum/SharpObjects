@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SharpObjects.Model
+namespace Kappa.Core.System
 {
 	public class DataObject : IDictionary<String, DataObjectValue>
 	{

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Kappa.Core.System;
+using System;
 using System.Runtime.InteropServices;
-using SharpObjects.Model;
 using static System.Console;
 
 namespace SharpObjects.Console

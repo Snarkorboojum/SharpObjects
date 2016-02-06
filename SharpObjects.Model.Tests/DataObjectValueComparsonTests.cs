@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Kappa.Core.System;
 
 namespace SharpObjects.Model.Tests
 {

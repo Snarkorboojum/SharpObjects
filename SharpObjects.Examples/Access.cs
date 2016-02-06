@@ -1,5 +1,5 @@
-﻿using System;
-using SharpObjects.Model;
+﻿using Kappa.Core.System;
+using System;
 
 namespace SharpObjects.Examples
 {
