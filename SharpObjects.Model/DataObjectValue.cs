@@ -120,14 +120,108 @@ namespace Kappa.Core.System
 				return;
 			}
 
-			_intValue = value.Length; // store lenght
+			_intValue = value.Length; // store length
 		}
 
 		public DataObjectValue(Object value)
 			: this()
 		{
-			_referenceTypeValue = value;
-			_type = DataObjectValueType.Object;
+			if (value==null)
+			{
+				_type = DataObjectValueType.None;
+				_referenceTypeValue = null;
+
+				return;
+			}
+
+			var objectType = value.GetType();
+
+			if (objectType == typeof(Boolean))
+			{
+				_type = DataObjectValueType.None;
+				_booleanValue = (Boolean)value;
+			}
+
+			else if (objectType == typeof(Int32))
+			{
+				_type = DataObjectValueType.Integer;
+				_intValue = (Int32)value;
+			}
+
+			else if (objectType == typeof(Single))
+			{
+				_type = DataObjectValueType.Float;
+				_singleValue = (Single)value;
+			}
+
+			else if (objectType == typeof(Double))
+			{
+				_type = DataObjectValueType.Double;
+				_doubleValue = (Double)value;
+
+			}
+
+			else if (objectType == typeof(String))
+			{
+				#region Except from DataObjectValue(String) constructor for futher notice.
+				{
+					var stringValue = (String)value;
+
+					_referenceTypeValue = value;
+					_type = DataObjectValueType.String;
+					if (value == null)
+						return;
+
+					if (Boolean.TrueString.Equals(stringValue, StringComparison.OrdinalIgnoreCase))
+					{
+						_booleanValue = true;
+						_type |= DataObjectValueType.Boolean;
+						return;
+					}
+
+					if (Boolean.FalseString.Equals(stringValue, StringComparison.OrdinalIgnoreCase))
+					{
+						_booleanValue = false;
+						_type |= DataObjectValueType.Boolean;
+						return;
+					}
+
+					Int32 parsedIntegerValue;
+					if (Int32.TryParse(stringValue, out parsedIntegerValue))
+					{
+						_intValue = parsedIntegerValue;
+						_type |= DataObjectValueType.Integer;
+						return;
+					}
+
+					Double parsedDoubleValue;
+					if (Double.TryParse(stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedDoubleValue))
+					{
+						_doubleValue = parsedDoubleValue;
+						_type |= DataObjectValueType.Double;
+						return;
+					}
+
+
+					Single parsedSingleValue;
+					if (Single.TryParse(stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedSingleValue))
+					{
+						_singleValue = parsedSingleValue;
+						_type |= DataObjectValueType.Float;
+						return;
+					}
+
+					_intValue = stringValue.Length; // store length
+				}
+
+				#endregion
+			}
+
+			else
+			{
+				_referenceTypeValue = value;
+				_type = DataObjectValueType.Object;
+			}
 		}
 
 		#endregion
