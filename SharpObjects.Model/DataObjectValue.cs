@@ -37,7 +37,7 @@ namespace Kappa.Core.System
 		[FieldOffset(4)]
 		private readonly Double _doubleValue; // size 8 bytes
 
-		[FieldOffset(12)] // should be aligned to 4 and be the last one to work on Any CPU
+		[FieldOffset(16)] // should be aligned to 4 and be the last one to work on Any CPU
 		private readonly Object _referenceTypeValue; // size 4 or 8 bytes
 
 		#endregion
