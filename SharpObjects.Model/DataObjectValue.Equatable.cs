@@ -298,7 +298,9 @@ namespace Kappa.Core.System
 		{
 			{
 				if (other._type == DataObjectValueType.Object)
-					return _referenceTypeValue == other._referenceTypeValue;
+					return _referenceTypeValue == null
+						? _referenceTypeValue == other._referenceTypeValue
+						: _referenceTypeValue.Equals(other._referenceTypeValue);
 
 				if (typeConsistencyCheck)
 					throw new InvalidOperationException("Cannot compare values with different types");
