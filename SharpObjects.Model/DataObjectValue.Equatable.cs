@@ -65,7 +65,7 @@ namespace Kappa.Core.System
 				return Equals(new DataObjectValue((Single)other), typeConsistencyCheck: false);
 
 			if (other is Double)
-				return Equals(new DataObjectValue((Single)other), typeConsistencyCheck: false);
+				return Equals(new DataObjectValue((Double)other), typeConsistencyCheck: false);
 
 			var stringObject = other as String;
 			return Equals(stringObject != null ? new DataObjectValue(stringObject) : new DataObjectValue(other), typeConsistencyCheck: false);
